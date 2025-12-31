@@ -12,7 +12,6 @@
   src: url('/assets/fonts/VT323-Regular.ttf');
 }
 
-
 :root {
   font-size: x-large;
   scroll-behavior: smooth;
@@ -61,7 +60,6 @@ a:link {
 
 section {
   margin: 0;
-  height: 100vh;
 }
 
 header>h1 {
@@ -158,11 +156,9 @@ main {
 }
 
 footer {
+  padding: 32px;
   font-variant: small-caps;
   text-transform: uppercase;
-  position: absolute;
-  width: 100%;
-  bottom: 1em;
 }
 
 a {
@@ -193,6 +189,9 @@ dd {
 
 dl {
   display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 16px;
   margin: 0;
 }
@@ -225,6 +224,7 @@ button:hover {
 .cta {
   text-transform: uppercase;
   text-wrap: nowrap;
+  display: inline-block;
 }
 
 
@@ -238,7 +238,7 @@ button:hover {
   font-variant: small-caps;
   letter-spacing: 0.2em;
   margin: 0;
-  padding: 16px 64px;
+  padding: 16px 48px;
   background: transparent !important;
   border-radius: 0.5em;
   box-shadow: var(--small-bottom-border-base) var(--primary);
@@ -255,17 +255,52 @@ button:hover {
   }
 }
 
+
+.cta-list {
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  align-self: center;
+}
+
+.cta-list {
+  height: max-content;
+}
+
+.icn::before {
+  content: "";
+  width: 1em;
+  /* You must set size manually now */
+  height: 1em;
+  display: inline-block;
+  background-color: currentColor;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  mask-size: contain;
+}
+
+.icn.location::before {
+  mask-image: url('/assets/icons/map-pin.svg');
+}
+
+.icn.job::before {
+  mask-image: url('/assets/icons/briefcase.svg');
+}
+
+.icn.education::before {
+  mask-image: url('/assets/icons/book.svg');
+}
+
 #hero {
   display: flex;
   flex-direction: column;
   height: 60vh;
-  margin: auto;
   gap: 8px;
   padding: 20vh 0;
   justify-content: space-around;
-  align-items: start;
-  text-align: start;
-  overflow: hidden;
 }
 
 #hero>.marquee {
@@ -274,7 +309,7 @@ button:hover {
   font-size: 12rem;
   font-family: 'VT323-Regular';
   color: var(--secondary-3);
-  text-shadow: 0 0 4px var(--secondary-1), 0 0 8px var(--secondary-1), 0 0 16px var(--secondary-1);
+  text-shadow: 0 0 4px var(--secondary-1), 0 0 8px var(--secondary-1), 0 0 24px var(--secondary-1);
   animation: scroll-left 5s linear infinite;
 }
 
@@ -290,7 +325,7 @@ button:hover {
   clip-path: polygon(0 0, 100% 0, 100% 45%, 0 45%);
   transform: translate(-2px, -2px);
   color: var(--secondary-1);
-  text-shadow: 0 0 4px var(--secondary-1), 0 0 8px var(--secondary-1);
+  text-shadow: 0 0 4px var(--secondary-1), 0 0 16px var(--secondary-1);
 }
 
 #hero>.marquee:first-child>div:before {
@@ -300,7 +335,7 @@ button:hover {
 
 #hero>.marquee:nth-child(2)>div:before {
   content: "I make software using passion and magic!";
-  animation: glitch 2s infinite;
+  animation: glitch 3s infinite;
 }
 
 @keyframes scroll-left {
@@ -332,37 +367,107 @@ button:hover {
   }
 }
 
-#hero ul {
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  gap: 10%;
-  display: flex;
-  align-self: center;
-}
 
-@media (max-width: 1080px) {
-  #hero {
-    width: 100%;
-    margin: 0 16px;
-  }
-
-  #hero>div {
+@media (max-width: 1366px) {
+  #hero>.marquee {
     font-size: 5rem;
   }
 }
 
-@media (max-width: 480px) {
-  #hero>div {
-    font-size: 2.5em;
+#about {
+  width: 100%;
+  padding: 10vh 16px;
+  height: fit-content;
+  gap: 32px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: nowrap;
+  view-timeline-name: --about-timeline;
+}
+
+#about>div:first-child {
+  flex-basis: 35%;
+  overflow: hidden;
+  height: 100%;
+}
+
+#about>div:first-child>img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  animation: up-down-translate linear forwards;
+  animation-timeline: --about-timeline;
+  animation-range: entry 0% 100%;
+}
+
+#about strong {
+  font-size: 4rem;
+}
+
+#about>div:last-child {
+  flex-basis: 40%;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+  justify-content: start;
+  max-width: 768px;
+}
+
+#about>div:last-child>p:first-child {
+  flex-direction: column;
+  gap: 0.1em;
+  font-family: 'VT323-Regular';
+}
+
+#about em,
+#about strong {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 100px;
+  animation: 1s linear reveal-in-secondary 1s forwards;
+}
+
+#about dd {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 100px;
+  animation: 1s linear focus-filter 2s forwards;
+  filter: blur(60px);
+}
+
+
+@media (max-width: 926px) {
+  #about {
+    flex-direction: column;
+  }
+}
+
+@keyframes focus-filter {
+  from {
+    filter: blur(60px);
   }
 
-  #hero>div {
-    margin-bottom: 0;
-    flex-grow: 1;
+  to {
+    filter: blur(0);
+  }
+}
+
+@keyframes reveal-in-secondary {
+  from {
+    color: var(--primary);
   }
 
-  #hero ul {
-    margin-bottom: 32px;
+  to {
+    color: var(--secondary-3);
+  }
+}
+
+@keyframes up-down-translate {
+  0% {
+    transform: translateY(-100vh);
+  }
+
+  100% {
+    transform: translateY(100vh);
   }
 }
