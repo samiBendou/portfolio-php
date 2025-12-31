@@ -1,3 +1,18 @@
+create type skill_kind as enum (
+  'tool', 
+  'coding', 
+  'hardware', 
+  'science', 
+  'industry', 
+  'language'
+);
+
+create type experience_kind as enum (
+  'job', 
+  'internship', 
+  'education'
+);
+
 create table organization (
   id serial primary key,
   title varchar(255) not null,
@@ -15,7 +30,7 @@ create table job (
 
 create table skill (
   id serial primary key,
-  kind character(32) not null,
+  kind skill_kind not null,
   title varchar(255) not null,
   level integer not null default 0,
 
@@ -24,7 +39,7 @@ create table skill (
 
 create table location (
   id serial primary key,
-  zip character(16) not null,
+  zip varchar(16) not null,
   country character(2) not null,
   
   unique(zip, country)
@@ -32,11 +47,10 @@ create table location (
 
 create table experience (
   id serial primary key,
-  kind character(32) not null,
+  kind experience_kind not null,
   title varchar(255) not null,
   brief text not null default '',
   details text not null default '',
-  keypoints varchar(255)[5] not null,
   started date not null,
   ended date,
   

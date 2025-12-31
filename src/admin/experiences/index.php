@@ -1,17 +1,18 @@
 <?php
 
-$db_path = $_ENV["DB_URL"];
-$pdo = new PDO($db_path);
+$dsn = $_ENV["DB_DSN"];
+$pdo = new PDO($dsn);
 
 $query = "SELECT  experience.id as id,
                   experience.title AS title, 
                   job.title AS job, 
+                  kind,
                   started, 
                   ended, 
                   organization.title AS organization 
           FROM experience 
-          LEFT JOIN job ON experience.job = job.id
-          LEFT JOIN organization ON experience.organization = organization.id
+          LEFT JOIN job ON experience.job=job.id
+          LEFT JOIN organization ON experience.organization=organization.id
           ORDER BY id DESC";
 $experiences = $pdo->query($query);
 
@@ -31,6 +32,7 @@ ob_start();
       <thead>
         <tr>
           <th>Title</th>
+          <th>Kind</th>
           <th>Start</th>
           <th>End</th>
           <th>Job</th>
@@ -49,6 +51,9 @@ ob_start();
               <?= $experience["title"] ?>
             </a>
           </th>
+          <td>
+            <?= $experience["kind"] ?>
+          </td>
           <td>
             <?= $experience["started"] ?>
           </td>

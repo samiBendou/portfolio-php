@@ -1,15 +1,11 @@
 <?php
 
-$db_path = $_ENV["DB_URL"];
-$pdo = new PDO($db_path);
-
-$title = 'Add experience';
-ob_start();
+$dsn = $_ENV["DB_DSN"];
+$pdo = new PDO($dsn);
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
-
-    $query = "INSERT INTO experience(kind, title, brief, details, keypoints, started, ended)
-              VALUES (:kind, :title, :brief, :details, {}, :started, :ended)";
+    $query = "INSERT INTO experience(kind, title, brief, details, started, ended)
+              VALUES (:kind, :title, :brief, :details, :started, :ended)";
     $stmt = $pdo->prepare($query);
     $stmt->execute([
       ":kind" => $_POST["kind"],
@@ -24,6 +20,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     exit;
 }
 
+
+$title = 'Add experience';
+ob_start();
 ?>
 
 <main>
@@ -31,54 +30,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     <?= $title ?>
   </h1>
 
-  <form method="POST">
-    <fieldset>
-      <legend>General infos</legend>
-
-      <label>
-        <span>Kind</span>
-        <select name="kind">
-          <option value="internship">Intership</option>
-          <option value="job">Job</option>
-          <option value="education">Education</option>
-        </select>
-      </label>
-
-      <label>
-        <span>Title</span>
-        <input required spellcheck="true" name="title" />
-      </label>
-
-      <label>
-        <span>Brief</span>
-        <textarea name="brief" spellcheck="true" rows="2"></textarea>
-      </label>
-
-      <label>
-        <span>Details</span>
-        <textarea name="details" spellcheck="true" rows="16"></textarea>
-      </label>
-
-    </fieldset>
-
-    <fieldset>
-      <legend>Dates</legend>
-
-      <fieldset class="inline-field">
-        <label>
-          <span>From</span>
-          <input required type="date" name="started" />
-        </label>
-
-        <label>
-          <span>To</span>
-          <input type="date" name="ended" />
-        </label>
-      </fieldset>
-    </fieldset>
-
-    <button>Submit</button>
-  </form>
+  <?php include("form.php") ?>
 </main>
 
 

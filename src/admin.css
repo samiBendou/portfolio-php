@@ -136,14 +136,13 @@ header {
 }
 
 main {
-  width: 50%;
-  margin: auto;
-  padding-top: 2rem;
-  padding-bottom: 2rem;
+  padding: 2rem;
 }
 
-main:has(> section table) {
-  width: 70%;
+form,
+fieldset {
+  margin: auto;
+  width: min(100%, 96em);
 }
 
 form,
@@ -155,7 +154,7 @@ fieldset {
   justify-content: stretch;
   align-items: stretch;
   flex-wrap: wrap;
-  margin: 0;
+  margin: 0 auto;
   padding: 0;
 }
 

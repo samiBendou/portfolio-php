@@ -1,27 +1,23 @@
-
 <?php
 
-$db_path = $_ENV["DB_URL"];
-$pdo = new PDO($db_path);
+$dsn = $_ENV["DB_DSN"];
+$pdo = new PDO($dsn);
 
 $id = $_SERVER['REQUEST_METHOD'] == 'GET' ? $_GET["id"] : $_POST["id"];
 
 $query = "SELECT  experience.id as id,
-                  experience.title AS title, 
-                  job.title AS job, 
+                  experience.title AS title,
+                  job.title AS job,
                   kind,
-                  brief,
+                  experience.brief AS brief,
                   details,
-                  location,
-                  start, 
-                  end, 
-                  organization.title AS organization 
-          FROM experience 
-          JOIN experience_job ON experience_job.experience = experience.id
-          JOIN job ON experience_job.job = job.id
-          JOIN experience_organization ON experience_organization.experience = experience.id
-          JOIN organization ON experience_organization.organization = organization.id
-          WHERE id=?";
+                  started,
+                  ended,
+                  organization.title AS organization
+          FROM experience
+          LEFT JOIN job ON experience.job=job.id
+          LEFT JOIN organization ON experience.organization=organization.id
+          WHERE experience.id=?";
 $stmt = $pdo->prepare($query);
 $stmt->execute([$id]);
 
@@ -31,34 +27,37 @@ if (!$experience) {
     exit;
 }
 
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    $query = "UPDATE experience 
+              SET kind=:kind, title=:title, brief=:brief, details=:details, started=:started, ended=:ended
+              WHERE id=:id";
+    $stmt = $pdo->prepare($query);
+    $stmt->execute([
+      ":id" => $id,
+      ":kind" => $_POST["kind"],
+      ":title" => htmlspecialchars($_POST["title"]),
+      ":brief" => htmlspecialchars($_POST["brief"]),
+      ":details" => $_POST["details"],
+      ":started" => $_POST["started"],
+      ":ended" => $_POST["ended"] ? $_POST["ended"] : null,
+    ]);
+
+    header("Location: index.php");
+    exit;
+}
+
+
 $title = 'Edit experience';
 ob_start();
-
 ?>
 
 <main>
-  <h1><? = $title ?></h1>
-  <form>
-    <section>
-      <h2>General infos</h2>
-      
-      <input hidden name="id" value="<? $experience["id"] ?>"/>
+  <h1>
+    <?= $title ?>
+  </h1>
 
-      <label>
-          Kind
-          <select name="kind" value="<? $experience["kind"] ?>">
-            <option value="internship">Intership</option>            
-            <option value="job">Job</option>            
-            <option value="education">Education</option>            
-          </select>
-      </label>
-
-    </section>  
-     
-
-  </form>
+  <?php include("form.php") ?>
 </main>
-
 
 <?php
 $content = ob_get_clean();

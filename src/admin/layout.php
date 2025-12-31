@@ -1,3 +1,13 @@
+<?php
+if (!isset($title)) {
+    $title = "Page";
+}
+
+if (!isset($content)) {
+    $content = "No content";
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en-US">
 
