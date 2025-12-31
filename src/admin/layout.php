@@ -16,26 +16,23 @@
 
 <body>
   <header>
-    <h1>
-      <a href="/">Portfolio</a>
-    </h1>
-
+    <a href="/">Portfolio</a>
     <nav>
       <menu>
         <li>
-          <a href="/projects/">Projects</a>
+          <a href="/admin/projects/">Projects</a>
         </li>
         <li>
-          <a href="/experiences/">Experiences</a>
+          <a href="/admin/experiences/">Experiences</a>
         </li>
         <li>
-          <a href="/skills/">Skills</a>
+          <a href="/admin/skills/">Skills</a>
         </li>
         <li>
-          <a href="/organizations/">Organizations</a>
+          <a href="/admin/organizations/">Organizations</a>
         </li>
         <li>
-          <a href="/jobs/">Jobs</a>
+          <a href="/admin/jobs/">Jobs</a>
         </li>
       </menu>
     </nav>

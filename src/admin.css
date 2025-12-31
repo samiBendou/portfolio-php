@@ -41,6 +41,7 @@ body {
   background: var(--neutral-2);
   background-attachment: fixed;
   height: 100%;
+  margin: 0;
 }
 
 section:only-of-type:has(h1:only-child) {
@@ -60,22 +61,23 @@ section {
   margin: 1.5em;
 }
 
-h1 {
+header>a {
   font-size: 2em;
   font-weight: bold;
 }
 
-h2 {
+h1 {
   font-size: 1.5em;
   font-weight: bold;
 }
 
-h3 {
+h2,
+legend {
   font-size: 1.25em;
   font-weight: bold;
 }
 
-h4 {
+h3 {
   font-size: 1em;
   font-weight: bold;
 }
@@ -107,6 +109,7 @@ menu {
   display: flex;
   gap: 1rem;
   list-style-type: none;
+  padding: 0;
 }
 
 a:any-link {
@@ -139,24 +142,32 @@ main {
   padding-bottom: 2rem;
 }
 
-main:has(> section:target table) {
+main:has(> section table) {
   width: 70%;
 }
 
 form,
-fieldset,
-form>section {
+fieldset {
+  border: none;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 2rem;
   justify-content: stretch;
   align-items: stretch;
   flex-wrap: wrap;
+  margin: 0;
+  padding: 0;
 }
 
-fieldset.flex-row {
+fieldset>legend {
+  margin-bottom: 2rem;
+}
+
+fieldset.inline-field {
+  flex-direction: row;
   justify-content: space-between;
 }
+
 
 table {
   table-layout: fixed;
@@ -190,7 +201,7 @@ thead th {
 
 td,
 th {
-  padding: 1.5rem 1rem;
+  padding: 1.5rem 0;
   text-wrap: nowrap;
   text-overflow: ellipsis;
   overflow-x: hidden;
@@ -246,27 +257,31 @@ progress::-webkit-progress-value {
   color: var(--primary);
 }
 
+
 label {
   color: var(--secondary-3);
   font-variant: small-caps;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
-label:has(+ input:focus),
-label:has(+ textarea:focus),
-label:has(+ select:focus),
-label:has(+ input:hover),
-label:has(+ textarea:hover),
-label:has(+ select:hover),
-label:has(+ input[type="radio"]:checked),
-label:has(+ input[type="checkbox"]:checked) {
+label:has(>input:focus),
+label:has(>textarea:focus),
+label:has(>select:focus),
+label:has(>input:hover),
+label:has(>textarea:hover),
+label:has(>select:hover),
+label:has(>input[type="radio"]:checked),
+label:has(>input[type="checkbox"]:checked) {
   font-weight: bold;
 }
 
-label:has(+ input:disabled),
-label:has(+ textarea:disabled),
-label:has(+ select:disabled),
-label:has(+ input[type="radio"]:disabled),
-label:has(+ input[type="checkbox"]:disabled) {
+label:has(>input:disabled),
+label:has(>textarea:disabled),
+label:has(>select:disabled),
+label:has(>input[type="radio"]:disabled),
+label:has(>input[type="checkbox"]:disabled) {
   font-weight: unset;
 }
 
@@ -283,11 +298,10 @@ input[type="file"]::file-selector-button {
 
   background: transparent;
   color: var(--primary);
-  margin-bottom: 2rem;
 }
 
-.trigger:checked+fieldset.hidden {
-  display: flex;
+textarea {
+  resize: none;
 }
 
 button,
@@ -318,15 +332,15 @@ input:user-invalid {
   box-shadow: var(--small-bottom-border-base) var(--danger);
 }
 
-label:has(+ input:user-invalid) {
+label:has(>input:user-invalid) {
   color: var(--danger);
 }
 
-label:has(+ input:disabled) {
+label:has(>input:disabled) {
   color: var(--primary);
 }
 
-label:has(+ input:required)::before {
+label:has(>input:required)>span::before {
   content: "*";
 }
 
