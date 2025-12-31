@@ -1,0 +1,502 @@
+:root {
+  --primary: #282c34;
+  --secondary-3: #2525dd;
+  --secondary-2: #373d96;
+  --secondary-1: #5353c6;
+  --neutral-2: #d7d3cb;
+  --neutral-1: white;
+  --danger: red;
+  --warning: orange;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --primary: #edf5e1;
+    --secondary-3: #8ee4af;
+    --secondary-2: #379683;
+    --secondary-1: #5cdb95;
+    --neutral-2: #282c34;
+    /* #05386b; */
+    --neutral-1: black;
+  }
+}
+
+:root {
+  --small-bottom-border-base: inset 0px -2px 0px;
+  --large-bottom-border-base: inset 0px -4px 0px;
+  --x-large-bottom-border-base: inset 0px -6px 0px;
+  --small-border-base: inset 0px 0px 0px 2px;
+  --small-bottom-border: var(--small-bottom-border-base) var(--primary);
+  --large-bottom-border: var(--large-bottom-border-base) var(--primary);
+  --small-border: var(--small-border-base) var(--primary);
+  font-family: "Inter";
+}
+
+html {
+  height: 100%;
+}
+
+body {
+  color: var(--primary);
+  background: var(--neutral-2);
+  background-attachment: fixed;
+  height: 100%;
+}
+
+section:only-of-type:has(h1:only-child) {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+section {
+  margin: 1.5em;
+}
+
+h1 {
+  font-size: 2em;
+  font-weight: bold;
+}
+
+h2 {
+  font-size: 1.5em;
+  font-weight: bold;
+}
+
+h3 {
+  font-size: 1.25em;
+  font-weight: bold;
+}
+
+h4 {
+  font-size: 1em;
+  font-weight: bold;
+}
+
+p {
+  font-size: 1em;
+}
+
+blockquote {
+  padding: 2rem;
+}
+
+dl {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+dd {
+  margin-left: 2rem;
+}
+
+dt {
+  font-weight: bold;
+  font-variant: small-caps;
+}
+
+menu {
+  display: flex;
+  gap: 1rem;
+  list-style-type: none;
+}
+
+a:any-link {
+  color: inherit;
+  font-weight: bold;
+}
+
+a:hover {
+  color: var(--secondary-3);
+}
+
+pre,
+header {
+  background-color: var(--neutral-2);
+}
+
+header {
+  padding: 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  box-shadow: var(--small-bottom-border);
+}
+
+main {
+  width: 50%;
+  margin: auto;
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+}
+
+main:has(> section:target table) {
+  width: 70%;
+}
+
+form,
+fieldset,
+form>section {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  justify-content: stretch;
+  align-items: stretch;
+  flex-wrap: wrap;
+}
+
+fieldset.flex-row {
+  justify-content: space-between;
+}
+
+table {
+  table-layout: fixed;
+  text-align: left;
+  width: 100%;
+  border-collapse: collapse;
+}
+
+thead {
+  text-align: left;
+  box-shadow: var(--small-bottom-border);
+}
+
+tbody {
+  background-color: var(--neutral-2);
+  overflow-x: hidden;
+}
+
+tr {
+  overflow-x: hidden;
+}
+
+thead th:nth-child(1) {
+  width: 25%;
+}
+
+thead th {
+  letter-spacing: 2px;
+  font-variant: small-caps;
+}
+
+td,
+th {
+  padding: 1.5rem 1rem;
+  text-wrap: nowrap;
+  text-overflow: ellipsis;
+  overflow-x: hidden;
+}
+
+::selection {
+  background: var(--secondary-1);
+  color: var(--primary);
+}
+
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+::-webkit-progress-inner-value,
+::-webkit-progress-inner-element {
+  background-color: transparent;
+}
+
+::-webkit-progress-bar,
+::-webkit-progress-value {
+  -webkit-appearance: none;
+  appearance: none;
+  background-color: transparent;
+}
+
+progress {
+  height: 1rem;
+  padding: 2px;
+  -webkit-appearance: none;
+  appearance: none;
+  border-radius: 1rem;
+  border: 2px solid var(--primary);
+  background-color: transparent;
+}
+
+progress::-moz-progress-bar {
+  border-radius: 1rem;
+  background-color: var(--primary);
+  color: var(--primary);
+}
+
+progress::-moz-range-progress {
+  border-radius: 1rem;
+  background-color: var(--secondary-1);
+  color: var(--primary);
+}
+
+progress::-webkit-progress-value {
+  border-radius: 1rem;
+  background-color: var(--primary);
+  color: var(--primary);
+}
+
+label {
+  color: var(--secondary-3);
+  font-variant: small-caps;
+}
+
+label:has(+ input:focus),
+label:has(+ textarea:focus),
+label:has(+ select:focus),
+label:has(+ input:hover),
+label:has(+ textarea:hover),
+label:has(+ select:hover),
+label:has(+ input[type="radio"]:checked),
+label:has(+ input[type="checkbox"]:checked) {
+  font-weight: bold;
+}
+
+label:has(+ input:disabled),
+label:has(+ textarea:disabled),
+label:has(+ select:disabled),
+label:has(+ input[type="radio"]:disabled),
+label:has(+ input[type="checkbox"]:disabled) {
+  font-weight: unset;
+}
+
+input,
+textarea,
+select,
+button,
+input[type="file"]::file-selector-button {
+  font-size: 1rem;
+  padding: 0.5rem;
+  border: none;
+  border-radius: 4px;
+  box-shadow: var(--small-bottom-border);
+
+  background: transparent;
+  color: var(--primary);
+  margin-bottom: 2rem;
+}
+
+.trigger:checked+fieldset.hidden {
+  display: flex;
+}
+
+button,
+input[type="file"]::file-selector-button {
+  margin: auto;
+  font-weight: bold;
+  cursor: pointer;
+  background-color: var(--secondary-2);
+}
+
+input[type="file"]::file-selector-button {
+  margin-right: 1rem;
+}
+
+button:active,
+input[type="file"]::file-selector-button:active {
+  background: var(--secondary-1);
+}
+
+button:disabled,
+input[type="file"]:disabled::file-selector-button {
+  cursor: unset;
+  background: transparent;
+  box-shadow: none;
+}
+
+input:user-invalid {
+  box-shadow: var(--small-bottom-border-base) var(--danger);
+}
+
+label:has(+ input:user-invalid) {
+  color: var(--danger);
+}
+
+label:has(+ input:disabled) {
+  color: var(--primary);
+}
+
+label:has(+ input:required)::before {
+  content: "*";
+}
+
+form:invalid>button:last-of-type {
+  background-color: var(--danger);
+}
+
+input:focus,
+textarea:focus,
+select:focus,
+button:focus,
+input[type="file"]::file-selector-button:focus {
+  outline: none;
+  box-shadow: var(--large-bottom-border);
+  background-color: var(--neutral-1);
+}
+
+input:focus:user-invalid,
+input:hover:user-invalid {
+  box-shadow: var(--large-bottom-border-base) var(--danger);
+}
+
+input:hover,
+textarea:hover,
+select:hover,
+button:hover,
+input[type="file"]::file-selector-button:hover {
+  box-shadow: var(--large-bottom-border);
+}
+
+input:disabled,
+textarea:disabled,
+select:disabled,
+button:disabled,
+input[type="file"]::file-selector-button:disabled {
+  background: none;
+  color: var(--primary);
+  box-shadow: var(--small-bottom-border) !important;
+}
+
+option {
+  font-family: "Inter", sans-serif;
+}
+
+option:checked {
+  color: var(--primary);
+  font-weight: bold;
+  background: var(--secondary-2) linear-gradient(0deg, var(--secondary-2) 0%, var(--secondary-2) 100%);
+}
+
+select:focus option:checked {
+  background: var(--secondary-1) linear-gradient(0deg, var(--secondary-1) 0%, var(--secondary-1) 100%);
+}
+
+option:active {
+  background-color: var(--secondary-1);
+}
+
+option:hover {
+  background-color: var(--secondary-2);
+}
+
+input[type="radio"],
+input[type="checkbox"] {
+  appearance: none;
+  background-color: var(--neutral-2);
+
+  font: inherit;
+  color: var(--primary);
+  width: 1rem;
+  height: 1rem;
+
+  box-shadow: inset 0px 0px 0px 2px var(--primary);
+
+  display: grid;
+  place-content: center;
+}
+
+input[type="radio"] {
+  border-radius: 50%;
+}
+
+input[type="radio"]::before {
+  content: "";
+  width: 0.5em;
+  height: 0.5em;
+  border-radius: 50%;
+  transform: scale(0);
+
+  box-shadow: inset 1em 1em var(--primary);
+}
+
+input[type="checkbox"]::before {
+  content: "";
+  width: 0.5em;
+  height: 0.5em;
+  border-radius: 0.1em;
+  transform: scale(0);
+
+  box-shadow: inset 1em 1em var(--primary);
+}
+
+input[type="checkbox"]:checked::before {
+  transform: scale(1);
+}
+
+input[type="radio"]:checked::before {
+  transform: scale(1);
+}
+
+input[type="range"] {
+  appearance: none;
+  background: transparent;
+  box-shadow: none;
+}
+
+input[type="range"]::-webkit-slider-runnable-track {
+  border-radius: 1vmin;
+  background: transparent;
+  box-shadow: inset 0 0 0 2px var(--primary);
+  height: 1em;
+}
+
+input[type="range"]::-moz-range-track {
+  background: transparent;
+  width: 100%;
+  border-radius: 1vmin;
+  box-shadow: inset 0 0 0 2px var(--primary);
+  height: 1em;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  appearance: none;
+  width: 1.25em;
+  height: 1.25em;
+  border-radius: 50%;
+  border: none;
+  background-color: var(--neutral-2);
+  box-shadow: inset 0 0 0 2px var(--primary);
+  translate: 0em -0.1125em;
+}
+
+input[type="range"]::-moz-range-thumb {
+  appearance: none;
+  width: 1.25em;
+  height: 1.25em;
+  border: none;
+  border-radius: 50%;
+  background-color: var(--neutral-2);
+  box-shadow: inset 0 0 0 2px var(--primary);
+}
+
+input[type="range"]::-moz-range-progress {
+  background: var(--secondary-1);
+  border-radius: 1vmin;
+  height: 0.5em;
+  translate: 0.25em;
+}
+
+input[type="range"]:focus::-webkit-slider-thumb,
+input[type="range"]:hover::-webkit-slider-thumb {
+  box-shadow: inset 0 0 0 4px var(--primary);
+}
+
+input[type="range"]:focus::-moz-range-progress,
+input[type="range"]:hover::-moz-range-progress {
+  background: var(--primary);
+}
+
+input[type="range"]:focus::-moz-range-track,
+input[type="range"]:focus::-webkit-slider-runnable-track {
+  background: white;
+}
