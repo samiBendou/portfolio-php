@@ -54,6 +54,19 @@ $kind = $experience["kind"];
     </fieldset>
   </fieldset>
 
+  <fieldset class="inline-field">
+    <legend>Location</legend>
+    <label>
+      <span>Country</span>
+      <input name="country" placeholder="FR" pattern="[A-Z]{2}" value="<?= $experience["country"] ?>"/>
+    </label>
+    
+    <label>
+      <span>ZIP Code</span>
+      <input name="zip" placeholder="75001" value="<?= $experience["zip"] ?>"/>
+    </label>
+  </fieldset>
+
   <button>Submit</button>
 </form>
 
