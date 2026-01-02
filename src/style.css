@@ -62,10 +62,12 @@ section {
   margin: 0;
 }
 
-header>h1 {
+header>a {
   position: fixed;
   top: 24;
   left: 24;
+  text-transform: uppercase;
+  font-size: 1em;
 }
 
 header {
@@ -411,7 +413,6 @@ button:hover {
   display: flex;
   flex-direction: column;
   gap: 48px;
-  justify-content: start;
   max-width: 768px;
 }
 
@@ -464,10 +465,10 @@ button:hover {
 
 @keyframes up-down-translate {
   0% {
-    transform: translateY(-100vh);
+    transform: translateY(-200vh);
   }
 
   100% {
-    transform: translateY(100vh);
+    transform: translateY(200vh);
   }
 }

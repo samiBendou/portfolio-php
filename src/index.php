@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8" />
   <title>
-    Sami Dahoux - Bendou
+    Sami Dahoux - Portfolio
   </title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -18,7 +18,9 @@
 
 <body>
   <header>
-    <h1><a href="/">sami.bendou.space</a></h1>
+    <a href="/">sami.bendou.space</a>
+        
+    <h1 style="display: none;">Sami Dahoux's portfolio</h1>
 
     <nav>
       <ul>
