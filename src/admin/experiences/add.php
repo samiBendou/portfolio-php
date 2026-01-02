@@ -87,15 +87,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 }
 
 
-$title = 'Add experience';
+$title = "Experience/add";
 ob_start();
 ?>
 
 <main>
-  <h1>
-    <?= $title ?>
-  </h1>
-
   <?php include("form.php") ?>
 </main>
 

@@ -26,7 +26,8 @@ if (!isset($content)) {
 
 <body>
   <header>
-    <a href="/">Portfolio</a>
+    <h1><a href="/">Portfolio</a>/<?= $title ?></h1>
+
     <nav>
       <menu>
         <li>

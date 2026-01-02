@@ -22,8 +22,6 @@ ob_start();
 
 <main>
   <section>
-    <h1><? = $title ?></h1>
-
     <menu>
       <a href="add.php">Add</a>
     </menu>

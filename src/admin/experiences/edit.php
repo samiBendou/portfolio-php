@@ -1,6 +1,4 @@
 <?php
-declare(strict_types=1);
-
 $dsn = $_ENV["DB_DSN"];
 $pdo = new PDO($dsn);
 
@@ -131,15 +129,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 }
 
 
-$title = 'Edit experience';
+$title = "Experience/$id";
 ob_start();
 ?>
 
 <main>
-  <h1>
-    <?= $title ?>
-  </h1>
-
   <?php include("form.php") ?>
 </main>
 
