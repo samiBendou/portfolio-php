@@ -3,7 +3,7 @@
 $dsn = $_ENV["DB_DSN"];
 $pdo = new PDO($dsn);
 
-$query = "SELECT id, title, link FROM organization ORDER BY id DESC";
+$query = "SELECT id, title, link FROM organization ORDER BY title ASC";
 $organizations = $pdo->query($query);
 
 $title = "Organizations";

@@ -16,7 +16,7 @@ if (!$organization) {
 }
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    $uploaded = $_FILES['image'];
+    $uploaded = $_FILES['logo'];
     if (isset($uploaded) && $uploaded['error'] !== UPLOAD_ERR_NO_FILE) {
         if ($uploaded['error'] !== UPLOAD_ERR_OK) {
             $error = $uploaded['error'];
@@ -60,7 +60,7 @@ ob_start();
 ?>
 
 <main>
-  <form method="POST">
+  <form method="POST" enctype="multipart/form-data">
     <input hidden name="id" value="<?= $organization["id"] ?>" />
 
     <fieldset>
