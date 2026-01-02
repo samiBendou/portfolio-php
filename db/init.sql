@@ -60,8 +60,8 @@ create table experience (
  );
 
 create table experience_skill (
-  experience integer not null references experience(id),
-  skill integer not null references skill(id),
+  experience integer not null references experience on delete cascade,
+  skill integer not null references skill on delete cascade,
 
   primary key(experience, skill)
 );
