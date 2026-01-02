@@ -54,9 +54,9 @@ create table experience (
   started date not null,
   ended date,
   
-  organization integer references organization(id),
-  job integer references job(id),
-  location integer references location(id)
+  organization integer references organization on delete set null,
+  job integer references job on delete set null,
+  location integer references location on delete set null
  );
 
 create table experience_skill (
