@@ -1,5 +1,7 @@
 <?php
 
+require_once("consts.php");
+
 $dsn = $_ENV["DB_DSN"];
 $pdo = new PDO($dsn);
 
@@ -33,10 +35,10 @@ ob_start();
             </a>
           </th>
           <td>
-            <?= $skill["kind"] ?>
+            <?= SKILL_KIND[$skill["kind"]] ?>
           </td>
           <td>
-            <?= $skill["level"] ?>
+            <?= SKILL_LEVEL[$skill["level"]] ?>
           </td>
           <td>
             <a href="remove.php?id=<?= $skill["id"] ?>">

@@ -1,5 +1,7 @@
 <?php
 
+require_once("consts.php");
+
 $dsn = $_ENV["DB_DSN"];
 $pdo = new PDO($dsn);
 
@@ -29,7 +31,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     exit;
 }
 
-$skill_kinds = ['tool', 'coding', 'hardware', 'science', 'industry', 'language'];
+$skills_levels = [1 => "Beginner", 2 => "Intermediate", 3 => "Advanced", 4 => "Expert"];
 
 $title = "Skill/$id";
 ob_start();
@@ -50,19 +52,25 @@ ob_start();
       <label>
         <span>Kind</span>
         <select name="kind">
-          <?php foreach ($skill_kinds as $kind) { ?>
+          <?php foreach (SKILL_KIND as $kind => $label) { ?>
             <option value="<?= $kind ?>" <?= $skill["kind"] === $kind ? "selected" : "" ?>>
-              <?= ucfirst($kind) ?>
+              <?= $label ?>
             </option>
           <?php } ?>
         </select>
       </label>
 
+
       <label>
         <span>Level</span>
-        <input type="number" required name="level" min="0" max="100" value="<?= $skill["level"] ?>" />
+        <select name="level">
+          <?php foreach (SKILL_LEVEL as $level => $label) { ?>
+            <option value="<?= $level ?>" <?= $skill["level"] === $level ? "selected" : "" ?>>
+              <?= $label ?>
+            </option>
+          <?php } ?>
+        </select>
       </label>
-
     </fieldset>
 
     <button>Submit</button>

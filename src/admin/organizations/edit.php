@@ -9,7 +9,6 @@ $query = "SELECT id, title, link, logo FROM organization WHERE id=?";
 $stmt = $pdo->prepare($query);
 $stmt->execute([$id]);
 $organization = $stmt->fetch();
-
 if (!$organization) {
     http_response_code(404);
     exit;

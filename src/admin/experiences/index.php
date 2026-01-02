@@ -1,5 +1,7 @@
 <?php
 
+include("consts.php");
+
 $dsn = $_ENV["DB_DSN"];
 $pdo = new PDO($dsn);
 
@@ -50,7 +52,7 @@ ob_start();
             </a>
           </th>
           <td>
-            <?= $experience["kind"] ?>
+            <?= EXPERIENCE_KIND[$experience["kind"]] ?>
           </td>
           <td>
             <?= $experience["started"] ?>

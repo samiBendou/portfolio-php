@@ -1,4 +1,7 @@
 <?php
+include($_SERVER["DOCUMENT_ROOT"] . "/admin/skills/consts.php");
+include("consts.php");
+
 if (!isset($experience)) {
     $experience = [];
 }
@@ -37,10 +40,12 @@ if (isset($experience)) {
     <label>
       <span>Kind</span>
       <select name="kind">
-        <option value="internship" <?=$kind === "internship" ? "selected" : "" ?> >Internship</option>
-        <option value="job" <?=$kind === "job" ? "selected" : "" ?> >Job</option>
-        <option value="education" <?=$kind === "education" ? "selected" : "" ?> >Education</option>
-      </select>
+          <?php foreach (EXPERIENCE_KIND as $kind => $label) { ?>
+            <option value="<?= $kind ?>" <?= $experience["kind"] === $kind ? "selected" : "" ?>>
+              <?= $label ?>
+            </option>
+          <?php } ?>
+        </select>
     </label>
 
     <label>
@@ -185,22 +190,21 @@ if (isset($experience)) {
         <label>
           <span>Kind</span>
           <select name="skill_kind[]">
-            <option value="tool">Tool & Technology</option>
-            <option value="coding">Software Language</option>
-            <option value="hardware">Hardware Design</option>
-            <option value="science">Scientific Knowledge</option>
-            <option value="industry">Industry Knowledge</option>
-            <option value="language">Language</option>
+            <?php foreach (SKILL_KIND as $kind => $label) { ?>
+            <option value="<?= $kind ?>">
+              <?= $label ?>
+            </option>
+          <?php } ?>
           </select>
         </label>
         <label>
           <span>Level</span>
           <select name="skill_level[]">
-            <option value="1">Begineer</option>
-            <option value="2">Intermediate</option>
-            <option value="3">Advanced</option>
-            <option value="4">Expert</option>
-            <option value="5">Master</option>
+            <?php foreach (SKILL_LEVEL as $level => $label) { ?>
+            <option value="<?= $level ?>" >
+              <?= $label ?>
+            </option>
+          <?php } ?>
           </select>
         </label>
       </fieldset>
