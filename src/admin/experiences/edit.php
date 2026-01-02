@@ -8,12 +8,14 @@ $id = $_SERVER['REQUEST_METHOD'] == 'GET' ? $_GET["id"] : $_POST["id"];
 $query = "SELECT  experience.id as id,
                   experience.title AS title,
                   job.title AS job,
+                  job.id AS job_id,
                   kind,
                   experience.brief AS brief,
                   details,
                   started,
                   ended,
                   organization.title AS organization,
+                  organization.id AS organization_id,
                   location.country AS country,
                   location.zip AS zip,
                   location.id AS location_id 
@@ -43,6 +45,30 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     ]);
     $location_id = $stmt->fetchColumn();
 
+    $organization_id = $_POST["organization_id"];
+    if ($_POST["organization_mode"] === "add") {
+        $query = "INSERT INTO organization(title, link)
+                  VALUES (:title, :link)";
+        $stmt = $pdo->prepare($query);
+        $stmt->execute([
+          ":title" => $_POST["organization_title"],
+          ":link" => $_POST["organization_link"] ? $_POST["organization_link"] : null,
+        ]);
+        $organization_id = $pdo->lastInsertId();
+    }
+
+    $job_id = $_POST["job_id"];
+    if ($_POST["job_mode"] === "add") {
+        $query = "INSERT INTO job(title, brief)
+                  VALUES (:title, :brief)";
+        $stmt = $pdo->prepare($query);
+        $stmt->execute([
+          ":title" => $_POST["job_title"],
+          ":brief" => $_POST["job_brief"] ? $_POST["job_brief"] : null,
+        ]);
+        $job_id = $pdo->lastInsertId();
+    }
+
     $query = "UPDATE experience 
               SET   kind=:kind, 
                     title=:title, 
@@ -50,7 +76,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     details=:details, 
                     started=:started, 
                     ended=:ended,
-                    location=:location
+                    location=:location,
+                    organization=:organization,
+                    job=:job
               WHERE id=:id";
     $stmt = $pdo->prepare($query);
     $stmt->execute([
@@ -61,7 +89,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
       ":details" => $_POST["details"],
       ":started" => $_POST["started"],
       ":ended" => $_POST["ended"] ? $_POST["ended"] : null,
-      ":location" => $location_id
+      ":location" => $location_id,
+      ":organization" => $organization_id ? $organization_id : null,
+      ":job" => $job_id ? $job_id : null
     ]);
 
     header("Location: index.php");

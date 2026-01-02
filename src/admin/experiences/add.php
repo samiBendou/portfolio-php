@@ -15,9 +15,32 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     ]);
     $location_id = $stmt->fetchColumn();
 
+    $organization_id = $_POST["organization_id"];
+    if ($_POST["organization_mode"] === "add") {
+        $query = "INSERT INTO organization(title, link)
+                  VALUES (:title, :link)";
+        $stmt = $pdo->prepare($query);
+        $stmt->execute([
+          ":title" => $_POST["organization_title"],
+          ":link" => $_POST["organization_link"] ? $_POST["organization_link"] : null,
+        ]);
+        $organization_id = $pdo->lastInsertId();
+    }
 
-    $query = "INSERT INTO experience(kind, title, brief, details, started, ended, location)
-              VALUES (:kind, :title, :brief, :details, :started, :ended, location)";
+    $job_id = $_POST["job_id"];
+    if ($_POST["job_mode"] === "add") {
+        $query = "INSERT INTO job(title, brief)
+                  VALUES (:title, :brief)";
+        $stmt = $pdo->prepare($query);
+        $stmt->execute([
+          ":title" => $_POST["job_title"],
+          ":brief" => $_POST["job_brief"] ? $_POST["job_brief"] : null,
+        ]);
+        $job_id = $pdo->lastInsertId();
+    }
+
+    $query = "INSERT INTO experience(kind, title, brief, details, started, ended, location, organization, job)
+              VALUES (:kind, :title, :brief, :details, :started, :ended, :location, :organization, :job)";
     $stmt = $pdo->prepare($query);
     $stmt->execute([
       ":kind" => $_POST["kind"],
@@ -26,7 +49,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
       ":details" => $_POST["details"],
       ":started" => $_POST["started"],
       ":ended" => $_POST["ended"] ? $_POST["ended"] : null,
-      ":location" => $_POST["location_id"]
+      ":location" => $_POST["location_id"],
+      ":organization" => $organization_id ? $organization_id : null,
+      ":job" => $job_id ? $job_id : null
     ]);
 
     header("Location: index.php");

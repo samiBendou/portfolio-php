@@ -164,7 +164,10 @@ fieldset>legend {
 
 fieldset.inline-field {
   flex-direction: row;
-  justify-content: space-between;
+}
+
+fieldset.inline-field>* {
+  flex-grow: 1;
 }
 
 
@@ -512,4 +515,16 @@ input[type="range"]:hover::-moz-range-progress {
 input[type="range"]:focus::-moz-range-track,
 input[type="range"]:focus::-webkit-slider-runnable-track {
   background: white;
+}
+
+.add-or-select>.trigger+* {
+  display: none;
+}
+
+.add-or-select>.trigger:has(input:checked)+* {
+  display: flex;
+}
+
+.add-or-select>:nth-child(3) {
+  order: 99;
 }
