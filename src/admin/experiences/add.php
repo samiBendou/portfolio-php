@@ -54,6 +54,34 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
       ":job" => $job_id ? $job_id : null
     ]);
 
+    $id = $pdo->lastInsertId();
+    $query = "INSERT INTO skill(title, kind, level) VALUES (:title, :kind, :level)";
+    $stmt = $pdo->prepare($query);
+    $new_skills = [];
+
+    foreach (range(0, 4) as $idx) {
+        if ($_POST["skill_title"][$idx]) {
+            $stmt->execute([
+              ":title" => $_POST["skill_title"][$idx],
+              ":kind" => $_POST["skill_kind"][$idx],
+              ":level" => $_POST["skill_level"][$idx]
+            ]);
+            array_push($new_skills, $pdo->lastInsertId());
+        }
+    }
+    $existing_skills = $_POST["skill_id"] ? $_POST["skill_id"] : [];
+    $skills = array_merge($existing_skills, $new_skills);
+    if (!empty($skills)) {
+        $placeholders = implode(',', array_fill(0, count($skills), '(?, ?)'));
+        $query = "INSERT INTO experience_skill(skill, experience) VALUES $placeholders";
+        $values = [];
+        foreach ($skills as $skill) {
+            array_push($values, $skill, $id);
+        }
+        $stmt = $pdo->prepare($query);
+        $stmt->execute($values);
+    }
+
     header("Location: index.php");
     exit;
 }

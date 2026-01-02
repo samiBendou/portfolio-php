@@ -528,3 +528,15 @@ input[type="range"]:focus::-webkit-slider-runnable-track {
 .add-or-select>:nth-child(3) {
   order: 99;
 }
+
+.multi-select-and-new>fieldset {
+  flex-basis: 40%;
+}
+
+.multi-select-and-new>label {
+  flex-basis: 40%;
+}
+
+.multi-select-and-new select {
+  height: 1000%;
+}

@@ -9,11 +9,23 @@ $kind = $experience["kind"];
 $dsn = $_ENV["DB_DSN"];
 $pdo = new PDO($dsn);
 
-$query = "SELECT id, title FROM organization";
+$query = "SELECT id, title FROM organization ORDER BY title ASC";
 $organizations = $pdo->query($query);
 
-$query = "SELECT id, title FROM job";
+$query = "SELECT id, title FROM job ORDER BY title ASC";
 $jobs = $pdo->query($query);
+
+$query = "SELECT id, title FROM skill ORDER BY title ASC";
+$skills = $pdo->query($query);
+
+$experience_skills = [];
+if (isset($experience)) {
+    $query = "SELECT skill FROM experience_skill WHERE experience=?";
+    $stmt = $pdo->prepare($query);
+    $stmt->execute([$experience["id"]]);
+    $result = $stmt->fetchAll(PDO::FETCH_COLUMN);
+    $experience_skills = $result;
+}
 ?>
 
 <form method="POST">
@@ -70,7 +82,7 @@ $jobs = $pdo->query($query);
       <span>Country</span>
       <input name="country" placeholder="FR" pattern="[A-Z]{0,2}" value="<?= trim($experience["country"]) ?>"/>
     </label>
-    
+
     <label>
       <span>ZIP Code</span>
       <input name="zip" placeholder="75001" value="<?= $experience["zip"] ?>"/>
@@ -81,37 +93,38 @@ $jobs = $pdo->query($query);
     <legend>Organization</legend>
     <label class="trigger">
       <label>New</label>
-      <input  type="radio" name="organization_mode" value="add" />
+      <input type="radio" name="organization_mode" value="add" />
     </label>
-    
+
     <fieldset class="inline-field">
       <label>
         <span>Title</span>
-        <input name="organization_title"/> 
-      </label> 
+        <input name="organization_title" />
+      </label>
 
       <label>
         <span>Link</span>
-        <input type="url" name="organization_link"/> 
-      </label> 
+        <input type="url" name="organization_link" />
+      </label>
     </fieldset>
 
     <label class="trigger">
       <label>Existing</label>
       <input type="radio" name="organization_mode" value="select" checked />
     </label>
-    
+
     <fieldset>
       <label>Organization</label>
       <select name="organization_id" value="<?= $experience["organization_id"] ?>">
-      <option value="">None</option>
-<?php foreach ($organizations as $organization) {
-    ?>
-      <option value="<?= $organization["id"] ?>" <?= $experience["organization_id"] === $organization["id"] ? "selected" : "" ?> >
-              <?= $organization["title"] ?>
-          </option>
-<?php
-}
+        <option value="">None</option>
+        <?php foreach ($organizations as $organization) {
+            ?>
+        <option value="<?= $organization["id"] ?>"
+          <?= $experience["organization_id"] === $organization["id"] ? "selected" : "" ?> >
+          <?= $organization["title"] ?>
+        </option>
+        <?php
+        }
 ?>
       </select>
     </fieldset>
@@ -120,44 +133,100 @@ $jobs = $pdo->query($query);
   <fieldset class="inline-field add-or-select">
     <legend>Job</legend>
     <label class="trigger">
-      <label>Brief</label>
-      <input  type="radio" name="job_mode" value="add" />
+      <label>New</label>
+      <input type="radio" name="job_mode" value="add" />
     </label>
-    
+
     <fieldset class="inline-field">
       <label>
         <span>Title</span>
-        <input name="job_title"/> 
-      </label> 
+        <input name="job_title" />
+      </label>
 
       <label>
         <span>Brief</span>
-        <input name="job_brief"/> 
-      </label> 
+        <input name="job_brief" />
+      </label>
     </fieldset>
 
     <label class="trigger">
       <label>Existing</label>
       <input type="radio" name="job_mode" value="select" checked />
     </label>
-    
+
     <fieldset>
       <label>Job</label>
       <select name="job_id" value="<?= $experience["job_id"] ?>">
-      <option value="">None</option>
-<?php foreach ($jobs as $job) {
-    ?>
-      <option value="<?= $job["id"] ?>" <?= $experience["job_id"] === $job["id"] ? "selected" : "" ?> >
-        <?= $job["title"] ?>
-      </option>
-<?php
-}
+        <option value="">None</option>
+        <?php foreach ($jobs as $job) {
+            ?>
+        <option value="<?= $job["id"] ?>"
+          <?= $experience["job_id"] === $job["id"] ? "selected" : "" ?> >
+          <?= $job["title"] ?>
+        </option>
+        <?php
+        }
 ?>
       </select>
     </fieldset>
   </fieldset>
+
+  <fieldset class="inline-field multi-select-and-new">
+    <legend>Skills</legend>
+
+    <fieldset>
+      <?php foreach (range(0, 4) as $_) {
+          ?>
+      <fieldset class="inline-field">
+        <label>
+          <span>Title</span>
+          <input name="skill_title[]" />
+        </label>
+        <label>
+          <span>Kind</span>
+          <select name="skill_kind[]">
+            <option value="tool">Tool & Technology</option>
+            <option value="coding">Software Language</option>
+            <option value="hardware">Hardware Design</option>
+            <option value="science">Scientific Knowledge</option>
+            <option value="industry">Industry Knowledge</option>
+            <option value="language">Language</option>
+          </select>
+        </label>
+        <label>
+          <span>Level</span>
+          <select name="skill_level[]">
+            <option value="1">Begineer</option>
+            <option value="2">Intermediate</option>
+            <option value="3">Advanced</option>
+            <option value="4">Expert</option>
+            <option value="5">Master</option>
+          </select>
+        </label>
+      </fieldset>
+      <?php
+      }
+?>
+    </fieldset>
+
+    <label>
+      <span>Existing</span>
+      <select name="skill_id[]" multiple>
+        <?php foreach ($skills as $skill) {
+            ?>
+        <option value="<?= $skill["id"] ?>"
+          <?= in_array($skill["id"], $experience_skills) ? "selected" : "" ?> >
+          <?= $skill["title"] ?>
+        </option>
+        <?php
+        }
+?>
+      </select>
+    </label>
+
+
+
   </fieldset>
 
   <button>Submit</button>
 </form>
-
