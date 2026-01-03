@@ -19,7 +19,7 @@
 
 body {
   text-align: center;
-  font-family: 'Roboto Condensed', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
     Roboto, 'Helvetica Neue', sans-serif;
   margin: 0;
 }
@@ -28,6 +28,10 @@ body {
   :root {
     font-size: normal;
   }
+}
+
+ul {
+  list-style-type: none;
 }
 
 h1,
@@ -257,7 +261,6 @@ button:hover {
   }
 }
 
-
 .cta-list {
   flex-direction: row;
   align-items: center;
@@ -273,27 +276,20 @@ button:hover {
 }
 
 .icn::before {
-  content: "";
-  width: 1em;
-  /* You must set size manually now */
-  height: 1em;
-  display: inline-block;
-  background-color: currentColor;
-  mask-repeat: no-repeat;
-  mask-position: center;
-  mask-size: contain;
+  font-family: "lucide";
+  vertical-align: text-top;
 }
 
 .icn.location::before {
-  mask-image: url('/assets/icons/map-pin.svg');
+  content: "\e111";
 }
 
 .icn.job::before {
-  mask-image: url('/assets/icons/briefcase.svg');
+  content: "\e062";
 }
 
 .icn.education::before {
-  mask-image: url('/assets/icons/book.svg');
+  content: "\e234";
 }
 
 #hero {
@@ -404,7 +400,10 @@ button:hover {
 }
 
 #about strong {
-  font-size: 4rem;
+  font-style: normal;
+  text-transform: uppercase;
+  mask: linear-gradient(90deg, transparent -10%, white 80%);
+  font-size: 5.5rem;
 }
 
 #about>div:last-child {
@@ -471,4 +470,63 @@ button:hover {
   100% {
     transform: translateY(200vh);
   }
+}
+
+#jobs {
+  position: relative;
+  padding-left: 10vw;
+}
+
+#jobs h3 {
+  text-align: left;
+  line-height: 0.83em;
+  mask: linear-gradient(90deg, transparent -10%, white 80%);
+  width: fit-content;
+  font-size: 5.5em;
+}
+
+#jobs h3>label {
+  transition: color 1s;
+  cursor: pointer;
+}
+
+#jobs h3>label:hover {
+  color: var(--secondary-3);
+}
+
+#jobs h3>* {
+  display: inline;
+  color: var(--primary);
+}
+
+#jobs h3>label::after {
+  font-family: "lucide";
+  content: "\e049";
+  vertical-align: bottom;
+}
+
+#jobs>article>div:last-child {
+  position: fixed;
+  top: 10vh;
+  left: 10vw;
+  width: 80vw;
+  height: 80vh;
+  display: flex;
+  transform: translateX(100vw);
+  transition: transform 1s linear;
+  background-color: black;
+  z-index: 100;
+}
+
+#jobs>article>div:last-child>:first-child {
+  flex-basis: 40%;
+}
+
+
+#jobs>article:has(h3 input:checked)>div {
+  transform: none;
+}
+
+#jobs>article h3:has(input:checked) label {
+  color: var(--secondary-3);
 }

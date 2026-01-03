@@ -1,3 +1,12 @@
+<?php
+
+$dsn = $_ENV["DB_DSN"];
+$pdo = new PDO($dsn);
+
+$query = "SELECT title, brief FROM job";
+$jobs = $pdo->query($query);
+?>
+
 <!DOCTYPE html>
 <html lang="en-US">
 
@@ -14,6 +23,7 @@
     rel="stylesheet">
   <script src="https://unpkg.com/lucide@latest"></script>
   <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/assets/fonts/lucide.css">
 </head>
 
 <body>
@@ -93,6 +103,40 @@
         </dl>
       </div>
     </section>
+
+    <section id="jobs">
+<?php
+  foreach ($jobs as $job) {
+      ?>
+  
+  <article>
+  <h3>
+    <label>
+    <?= $job["title"] ?>
+    <input type="checkbox" style="display: none;" />
+    </label>
+  </h3>
+  <div>
+    <div>
+    </div>
+    
+    <div>
+      <p>
+        <?= $job["brief"] ?>
+      </p>
+
+       <h4>
+        <?= $job["title"] ?>
+      </h4>
+
+    </div>
+  </div>
+  </article>
+<?php
+  }
+?>
+    </section>
+
   </main>
 
   <footer>

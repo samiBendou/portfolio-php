@@ -60,7 +60,10 @@ if (isset($experience)) {
 
     <label>
       <span>Details</span>
-      <textarea name="details" spellcheck="true" rows="16"><?= $experience["details"] ?></textarea>
+      <div id="editor-container">
+        <div id="editor"><?= $experience["details"] ?></div>
+      </div>
+      <textarea name="details" id="details-input" style="display:none;"><?= $experience["details"] ?></textarea>
     </label>
 
   </fieldset>
@@ -234,3 +237,24 @@ if (isset($experience)) {
 
   <button>Submit</button>
 </form>
+
+<script>
+  const quill = new Quill('#editor', {
+    modules: {
+      toolbar: [
+        ['bold', 'italic', 'underline', 'strike'],
+        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+        [{ 'indent': '-1'}, { 'indent': '+1' }],
+        ['link'],
+        ['clean']
+      ]
+    }
+  });
+
+  const form = document.querySelector('form');
+  const details = document.getElementById('details-input');
+
+  form.addEventListener('submit', function() {
+    details.value = quill.getSemanticHTML().replaceAll("&nbsp;", " ");
+  });
+</script>
