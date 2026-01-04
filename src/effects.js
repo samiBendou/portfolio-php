@@ -1,5 +1,4 @@
 const MAX_ALT = 42000;
-const MARQUEE_SPEED = 200;
 
 document.addEventListener("DOMContentLoaded", () => {
   /*** Marquee effect ***/
@@ -10,18 +9,6 @@ document.addEventListener("DOMContentLoaded", () => {
     for (const child of [...children]) {
       const clone = child.cloneNode(true);
       el.appendChild(clone);
-    }
-
-    const firstChild = el.firstElementChild;
-    if (firstChild) {
-      const width = firstChild.offsetWidth;
-      const duration = width / MARQUEE_SPEED;
-      firstChild.style.animationDuration = `${duration}s`;
-
-      // Apply same duration to cloned elements
-      for (const child of el.children) {
-        child.style.animationDuration = `${duration}s`;
-      }
     }
   }
 

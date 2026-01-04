@@ -1,19 +1,84 @@
 <?php
 
-header('Access-Control-Allow-Origin: https://aviationweather.gov');
-header('Access-Control-Allow-Methods: GET, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type');
+$cache_file = __DIR__ . "/cache.php";
 
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200);
-    exit;
+if (file_exists($cache_file)) {
+    $cache = include $cache_file;
+    extract($cache);
+}
+
+$new_cache = [];
+$now = new DateTime();
+if (!isset($metar) || (isset($metar_ttl) && $metar_ttl->diff($now)->h >= 1)) {
+    $ch = curl_init("https://api.checkwx.com/metar/LFPG");
+    $headers = ["X-API-Key: 7e5f03e5409944749a9a5f059887d736"];
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    $response = curl_exec($ch);
+    $metar = json_decode($response, true)["data"][0];
+    $metar_ttl = $now;
 }
 
 $dsn = $_ENV["DB_DSN"];
 $pdo = new PDO($dsn);
 
-$query = "SELECT id, title, brief FROM job";
+$query = "SELECT id, title, brief FROM job ORDER BY title";
 $jobs = $pdo->query($query);
+
+$query = "SELECT id, zip, country FROM location";
+$locations = $pdo->query($query);
+
+$ch = curl_init();
+$key = "542893341774625209706x124087";
+
+if (!isset($resolved_locations)) {
+    $resolved_locations = [];
+}
+
+foreach ($locations as $location) {
+    if (!key_exists($location["id"], $resolved_locations)) {
+        $zip = $location["zip"];
+        $country = $location["country"];
+        curl_setopt($ch, CURLOPT_URL, "https://geocode.xyz/$zip?region=$country&json=1&auth=$key");
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        $json = json_decode(curl_exec($ch), true);
+        if (!isset($json["error"])) {
+            $resolved = ["country" => $json["country"], "city" => $json["city"]];
+            $resolved["state"] = "";
+            if (is_string($json["statename"])) {
+                $resolved["state"] = $json["statename"];
+            } elseif (isset($json["state"])) {
+                $resolved["state"] = $json["state"];
+            } elseif (isset($json["region"])) {
+                $resolved["state"] = $json["region"];
+            }
+
+            $resolved_locations[$location["id"]] = $resolved;
+        }
+    }
+}
+
+$query = "SELECT experience.title AS title, organization.title AS organization, organization.link AS link, location 
+          FROM experience JOIN organization ON experience.organization = organization.id
+          WHERE experience.kind='job' 
+          ORDER BY started DESC LIMIT 1";
+$stmt = $pdo->prepare($query);
+$stmt->execute();
+$last_job = $stmt->fetch();
+
+$query = "SELECT experience.title AS title, organization.title AS organization, organization.link AS link, location
+          FROM experience JOIN organization ON experience.organization = organization.id
+          WHERE experience.kind='education' 
+          ORDER BY started DESC LIMIT 1";
+$stmt = $pdo->prepare($query);
+$stmt->execute();
+$last_education = $stmt->fetch();
+
+file_put_contents($cache_file, '<?php return ' . var_export([
+    "resolved_locations" => $resolved_locations,
+    "metar" => $metar,
+    "metar_ttl" => $metar_ttl
+  ], true) . ';');
 ?>
 
 <!DOCTYPE html>
@@ -25,8 +90,6 @@ $jobs = $pdo->query($query);
     Sami Dahoux - Portfolio
   </title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
@@ -65,8 +128,7 @@ $jobs = $pdo->query($query);
       <section id="about">
 
         <div id="metar" class="marquee" role="figure">
-          <div>METAR LFPG 031030Z AUTO 28009KT 9999 FEW013 02/M00 Q100 // HI! MY NAME IS SAMI DAHOUX // I MAKE
-            SOFTWARE WITH MAGIC AND PASSION //</div>
+          <div><?= $metar ?> // HI! MY NAME IS SAMI DAHOUX // I MAKE SOFTWARE WITH MAGIC AND PASSION //</div>
         </div>
         <div>
           <div id="radar" role="figure">
@@ -76,26 +138,23 @@ $jobs = $pdo->query($query);
             <h2 class="oldschool-heading">About me</h2>
 
             <dl>
+              <dt>
+                <?= $last_job["title"] ?>
+              </dt> 
+              <div>@</div>
               <dd>
-                <data class="icn location" value="75018-FR">
-                  <a href="https://www.google.com/maps/place/75018+FR">
-                    Paris
-                  </a>
-                </data>
+                <a href="<?= $last_job["link"] ?>">
+                  <?= $last_job["organization"] ?>
+                </a>
               </dd>
+              <dt>
+                <?= $last_education["title"] ?>
+              </dt>
+              <div>@</div>
               <dd>
-                <data class="icn job" value="last-company">
-                  <a href="https://last.job">
-                    Company
-                  </a>
-                </data>
-              </dd>
-              <dd>
-                <data class="icn education" value="last-school">
-                  <a href="https://last.school">
-                    Graduation
-                  </a>
-                </data>
+                <a href="<?= $last_education["link"] ?>">
+                  <?= $last_education["organization"] ?>
+                </a>
               </dd>
             </dl>
 
@@ -124,30 +183,35 @@ $jobs = $pdo->query($query);
         <div>
           <?php
   foreach ($jobs as $job) {
-      $query = "SELECT id, started, ended FROM experience WHERE job=?";
+      $query = "WITH  ranges AS ( SELECT started, COALESCE(ended, date('now')) AS ended FROM experience WHERE job = ?),
+                      groups AS ( SELECT started, ended, MAX(ended) OVER (ORDER BY started ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING) AS prev_max_end 
+                                  FROM ranges ORDER BY started),
+                      merged AS ( SELECT  started, 
+                                          ended,
+                                          CASE
+                                            WHEN prev_max_end IS NULL OR started > prev_max_end THEN 1
+                                            ELSE 0
+                                            END AS is_new_group
+                                  FROM groups
+                                ),
+                      numbered AS (SELECT started, ended, SUM(is_new_group) OVER (ORDER BY started) AS grp FROM merged), 
+                      dates  AS (SELECT MAX(ended) as ended, MIN(started) as started FROM numbered GROUP BY grp)
+                SELECT MIN(started) AS start, ROUND(SUM(ended - started) / 365.0) AS duration FROM dates";
       $stmt = $pdo->prepare($query);
       $stmt->execute([$job["id"]]);
-      $experiences = $stmt->fetchAll();
-      $experiences_started = min(array_map(function ($e) { return $e["started"]; }, $experiences));
-      $experiences_end = max(array_map(function ($e) { return $e["ended"]; }, $experiences));
-      $started = new DateTime($experiences_started);
-      $ended = new DateTime($experiences_end);
-      $duration = $ended->diff($started);
-      if ($duration->m >= 6) {
-          $duration->y += 1;
-      }
-
-
-      $placeholders = implode(',', array_fill(0, count($experiences), '?'));
-      $query = "SELECT DISTINCT title FROM skill JOIN experience_skill ON experience_skill.skill = skill.id WHERE experience_skill.experience IN ($placeholders)";
-      $experiences_ids = array_map(function ($e) {return $e["id"]; }, $experiences);
+      $duration = $stmt->fetch();
+      $query = "SELECT DISTINCT skill.title FROM experience_skill
+                JOIN skill ON experience_skill.skill=skill.id
+                JOIN experience ON experience_skill.experience = experience.id
+                WHERE experience.job=?
+                ORDER BY skill.title";
       $stmt = $pdo->prepare($query);
-      $stmt->execute($experiences_ids);
+      $stmt->execute([$job["id"]]);
       $job_skills = $stmt->fetchAll();
       ?>
           <label>
             <?= $job["title"] ?>
-            <input type="radio" checked name="selected" style="display: none;" value="<?= $job["id"] ?>" />
+            <input type="radio" hidden checked name="selected" value="<?= $job["id"] ?>" />
           </label>
 
           <article>
@@ -165,7 +229,7 @@ $jobs = $pdo->query($query);
                   <?= $job["title"] ?>
                 </h3>
                 <div class="marquee"> 
-                <ul>
+                <ul class="skills">
 <?php foreach ($job_skills as $skill) {
     ?>
                     <li> // <?= $skill["title"] ?> </li>
@@ -174,11 +238,11 @@ $jobs = $pdo->query($query);
       ?>
                 </ul>
                 </div>
+                <a class="cta" href="/DAHOUX-Sami-generic-resume.pdf" target="_blank">Get resume</a>
                 <dl>
-                <dd><data><?= $duration->format("%y years") ?> of experience</data></dd>
-                  <dd></dd>
+                  <dd><?= $duration["duration"] ?> year(s) of experience</dd>
+                  <dd>Since <?= new DateTime($duration["start"])->format("Y") ?></dd>
                 </dl>
-                
               </div>
           </article>
           <?php

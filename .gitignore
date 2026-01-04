@@ -5,3 +5,4 @@ uploads/
 .php-cs-fixer.dist.php
 .DS_Store
 DS_Store
+cache.php

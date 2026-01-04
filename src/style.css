@@ -138,7 +138,6 @@ strong {
   line-height: 1em;
 }
 
-data,
 time,
 dd {
   text-transform: uppercase;
@@ -147,17 +146,17 @@ dd {
 
 dl {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 16px;
+  gap: var(--space-3);
   margin: 0;
 }
 
 dd {
   margin: 0;
   display: flex;
-  gap: 16px;
+  gap: var(--space-3);
   align-items: center;
 }
 
@@ -187,6 +186,7 @@ label:has(>input:checked) {
   border-color: var(--secondary-1);
   padding: var(--space-2);
   font-variant: small-caps;
+  width: fit-content;
 }
 
 .cta-list {
@@ -222,7 +222,7 @@ label:has(>input:checked) {
 }
 
 .marquee>* {
-  animation: marquee linear infinite;
+  animation: 10s marquee linear infinite;
   white-space: nowrap;
   padding-right: var(--space-2);
 }
@@ -420,6 +420,14 @@ footer>p {
 
 #about>div:last-child dl {
   align-self: center;
+  display: grid;
+  grid-template-columns: 1fr max-content max-content;
+}
+
+#about>div:last-child dt {
+  overflow: hidden;
+  text-wrap: nowrap;
+  text-overflow: ellipsis;
 }
 
 #about>div:last-child>div:last-child {
@@ -485,7 +493,7 @@ footer>p {
   overflow: scroll;
 }
 
-#jobs article ul {
+#jobs article .article {
   display: flex;
   align-items: center;
   gap: var(--space-2);
@@ -495,8 +503,12 @@ footer>p {
   width: max-content;
 }
 
-#jobs article li {
+#jobs article .skills li {
   flex-shrink: 0;
+}
+
+#jobs article .skills {
+  animation-duration: 3s;
 }
 
 @media(min-width: 1366px) {
