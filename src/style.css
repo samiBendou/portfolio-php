@@ -507,7 +507,18 @@ footer>p {
   flex-shrink: 0;
 }
 
+#jobs article .skills li::before {
+  content: " // "
+}
+
+#jobs article .marquee {
+  width: 100%;
+  flex-shrink: 0;
+}
+
 #jobs article .skills {
+  display: flex;
+  flex-wrap: nowrap;
   animation-duration: 3s;
 }
 

@@ -22,7 +22,37 @@ if (!isset($metar) || (isset($metar_ttl) && $metar_ttl->diff($now)->h >= 1)) {
 $dsn = $_ENV["DB_DSN"];
 $pdo = new PDO($dsn);
 
-$query = "SELECT id, title, brief FROM job ORDER BY title";
+$subquery_exp =  "WITH  ranges AS ( SELECT job, started, COALESCE(ended, date('now')) AS ended FROM experience WHERE job IS NOT NULL),
+                        groups AS ( SELECT job, started, ended, MAX(ended) OVER (ORDER BY started ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING) AS prev_max_end 
+                                    FROM ranges ORDER BY started),
+                        merged AS ( SELECT  job,
+                                            started, 
+                                            ended,
+                                            CASE
+                                              WHEN prev_max_end IS NULL OR started > prev_max_end THEN 1
+                                                ELSE 0
+                                              END AS is_new_group
+                                    FROM groups
+                                  ),
+                        numbered AS ( SELECT job, started, ended, SUM(is_new_group) OVER (ORDER BY started) AS grp FROM merged), 
+                        dates AS (    SELECT job, MAX(ended) as ended, MIN(started) as started FROM numbered GROUP BY grp, job)
+                  SELECT job, MIN(started) AS started, ROUND(SUM(ended - started) / 365.0) AS duration FROM dates GROUP BY job";
+
+$query = "SELECT
+            job.id,
+            job.title,
+            job.brief,
+            dates.started,
+            dates.duration,
+            JSON_AGG(DISTINCT skill.title ORDER BY skill.title ASC) AS skills
+          FROM job
+          JOIN ($subquery_exp) AS dates ON job.id=dates.job
+          LEFT JOIN experience ON experience.job = job.id
+          LEFT JOIN experience_skill ON experience_skill.experience = experience.id
+          LEFT JOIN skill ON experience_skill.skill = skill.id
+          WHERE skill.title IS NOT NULL 
+          GROUP BY job.id, job.title, job.brief, dates.started, dates.duration
+          ORDER BY duration ASC";
 $jobs = $pdo->query($query);
 
 $query = "SELECT id, zip, country FROM location";
@@ -181,34 +211,7 @@ file_put_contents($cache_file, '<?php return ' . var_export([
       <section id="jobs">
         <h2>What I do</h2>
         <div>
-          <?php
-  foreach ($jobs as $job) {
-      $query = "WITH  ranges AS ( SELECT started, COALESCE(ended, date('now')) AS ended FROM experience WHERE job = ?),
-                      groups AS ( SELECT started, ended, MAX(ended) OVER (ORDER BY started ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING) AS prev_max_end 
-                                  FROM ranges ORDER BY started),
-                      merged AS ( SELECT  started, 
-                                          ended,
-                                          CASE
-                                            WHEN prev_max_end IS NULL OR started > prev_max_end THEN 1
-                                            ELSE 0
-                                            END AS is_new_group
-                                  FROM groups
-                                ),
-                      numbered AS (SELECT started, ended, SUM(is_new_group) OVER (ORDER BY started) AS grp FROM merged), 
-                      dates  AS (SELECT MAX(ended) as ended, MIN(started) as started FROM numbered GROUP BY grp)
-                SELECT MIN(started) AS start, ROUND(SUM(ended - started) / 365.0) AS duration FROM dates";
-      $stmt = $pdo->prepare($query);
-      $stmt->execute([$job["id"]]);
-      $duration = $stmt->fetch();
-      $query = "SELECT DISTINCT skill.title FROM experience_skill
-                JOIN skill ON experience_skill.skill=skill.id
-                JOIN experience ON experience_skill.experience = experience.id
-                WHERE experience.job=?
-                ORDER BY skill.title";
-      $stmt = $pdo->prepare($query);
-      $stmt->execute([$job["id"]]);
-      $job_skills = $stmt->fetchAll();
-      ?>
+          <?php foreach ($jobs as $job) {?>
           <label>
             <?= $job["title"] ?>
             <input type="radio" hidden checked name="selected" value="<?= $job["id"] ?>" />
@@ -230,24 +233,19 @@ file_put_contents($cache_file, '<?php return ' . var_export([
                 </h3>
                 <div class="marquee"> 
                 <ul class="skills">
-<?php foreach ($job_skills as $skill) {
-    ?>
-                    <li> // <?= $skill["title"] ?> </li>
-<?php
-}
-      ?>
+                    <?php foreach (json_decode($job["skills"], true) as $skill) { ?>
+                    <li><?= $skill ?></li>
+                    <?php } ?>
                 </ul>
                 </div>
                 <a class="cta" href="/DAHOUX-Sami-generic-resume.pdf" target="_blank">Get resume</a>
                 <dl>
-                  <dd><?= $duration["duration"] ?> year(s) of experience</dd>
-                  <dd>Since <?= new DateTime($duration["start"])->format("Y") ?></dd>
+                  <dd><?= $job["duration"] ?> year(s) of experience</dd>
+                  <dd>Since <?= new DateTime($job["started"])->format("Y") ?></dd>
                 </dl>
               </div>
           </article>
-          <?php
-  }
-?>
+          <?php } ?>
         </div>
       </section>
     </main>
