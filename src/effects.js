@@ -1,6 +1,30 @@
 const MAX_ALT = 42000;
+const MARQUEE_SPEED = 200;
 
 document.addEventListener("DOMContentLoaded", () => {
+  /*** Marquee effect ***/
+  const marquees = document.getElementsByClassName("marquee");
+
+  for (const el of marquees) {
+    const children = el.childNodes;
+    for (const child of [...children]) {
+      const clone = child.cloneNode(true);
+      el.appendChild(clone);
+    }
+
+    const firstChild = el.firstElementChild;
+    if (firstChild) {
+      const width = firstChild.offsetWidth;
+      const duration = width / MARQUEE_SPEED;
+      firstChild.style.animationDuration = `${duration}s`;
+
+      // Apply same duration to cloned elements
+      for (const child of el.children) {
+        child.style.animationDuration = `${duration}s`;
+      }
+    }
+  }
+
   /*** Right altitude indicator ***/
 
   const altPos = document.getElementById("alt-pos");
@@ -68,8 +92,8 @@ document.addEventListener("DOMContentLoaded", () => {
   ];
 
   directions.forEach(({ angle, label, primary }) => {
-    const x = 50 + 45 * Math.cos(((angle + 270) / 360) * 2 * Math.PI);
-    const y = 50 + 45 * Math.sin(((angle + 270) / 360) * 2 * Math.PI);
+    const x = 50 + 40 * Math.cos(((angle + 270) / 360) * 2 * Math.PI);
+    const y = 50 + 40 * Math.sin(((angle + 270) / 360) * 2 * Math.PI);
 
     const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
     text.setAttribute("x", x);

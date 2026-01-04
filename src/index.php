@@ -12,7 +12,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 $dsn = $_ENV["DB_DSN"];
 $pdo = new PDO($dsn);
 
-$query = "SELECT title, brief FROM job";
+$query = "SELECT id, title, brief FROM job";
 $jobs = $pdo->query($query);
 ?>
 
@@ -43,7 +43,7 @@ $jobs = $pdo->query($query);
   <div>
     <header>
       <label>
-        <input style="display: none;" type="checkbox" />
+        <input hidden type="checkbox" />
       </label>
       <a href="/">sami.bendou.space</a>
       <div>
@@ -64,11 +64,9 @@ $jobs = $pdo->query($query);
     <main id="main">
       <section id="about">
 
-        <div id="metar" role="figure">
-          <div>&nbsp; METAR LFPG 031030Z AUTO 28009KT 9999 FEW013 02/M00 Q100 // HI! MY NAME IS SAMI DAHOUX // I MAKE
+        <div id="metar" class="marquee" role="figure">
+          <div>METAR LFPG 031030Z AUTO 28009KT 9999 FEW013 02/M00 Q100 // HI! MY NAME IS SAMI DAHOUX // I MAKE
             SOFTWARE WITH MAGIC AND PASSION //</div>
-          <div>METAR LFPG 031030Z AUTO 28009KT 9999 FEW013 02/M00 Q100 // HI! MY NAME IS SAMI DAHOUX // I MAKE SOFTWARE
-            WITH MAGIC AND PASSION // </div>
         </div>
         <div>
           <div id="radar" role="figure">
@@ -76,22 +74,6 @@ $jobs = $pdo->query($query);
 
           <div>
             <h2 class="oldschool-heading">About me</h2>
-
-            <p>
-              I'm an <em>8-years</em> experienced <em>software engineer</em> with a strong interest in
-              <em>web technologies</em>
-              and <em>cyber-physical systems</em>. I believe that engineering is an
-              <em>artistic</em>
-              and
-              <em>creative</em> way to <em>imagine</em> and <em>build</em> the world we want to live in.
-            </p>
-
-            <p><strong>Make mankind dreams come true</strong></p>
-
-            <ul class="cta-list">
-              <li><a href="#contact" class="cta">Let's meet</a></li>
-              <li><a href="/asses/DAHOUX-Sami-generic-resume.pdf" class="cta">Get Resume</a></li>
-            </ul>
 
             <dl>
               <dd>
@@ -116,6 +98,23 @@ $jobs = $pdo->query($query);
                 </data>
               </dd>
             </dl>
+
+            <p>
+              I'm an <em>8-years</em> experienced <em>software engineer</em> with a strong interest in
+              <em>web technologies</em>
+              and <em>cyber-physical systems</em>. I believe that engineering is an
+              <em>artistic</em>
+              and
+              <em>creative</em> way to <em>imagine</em> and <em>build</em> the world we want to live in.
+            </p>
+
+            <p><strong>Make mankind dreams come true</strong></p>
+
+            <ul class="cta-list">
+              <li><a href="#contact" class="cta">Let's meet</a></li>
+              <li><a href="/asses/DAHOUX-Sami-generic-resume.pdf" class="cta">Get Resume</a></li>
+            </ul>
+
           </div>
         </div>
       </section>
@@ -125,31 +124,62 @@ $jobs = $pdo->query($query);
         <div>
           <?php
   foreach ($jobs as $job) {
+      $query = "SELECT id, started, ended FROM experience WHERE job=?";
+      $stmt = $pdo->prepare($query);
+      $stmt->execute([$job["id"]]);
+      $experiences = $stmt->fetchAll();
+      $experiences_started = min(array_map(function ($e) { return $e["started"]; }, $experiences));
+      $experiences_end = max(array_map(function ($e) { return $e["ended"]; }, $experiences));
+      $started = new DateTime($experiences_started);
+      $ended = new DateTime($experiences_end);
+      $duration = $ended->diff($started);
+      if ($duration->m >= 6) {
+          $duration->y += 1;
+      }
+
+
+      $placeholders = implode(',', array_fill(0, count($experiences), '?'));
+      $query = "SELECT DISTINCT title FROM skill JOIN experience_skill ON experience_skill.skill = skill.id WHERE experience_skill.experience IN ($placeholders)";
+      $experiences_ids = array_map(function ($e) {return $e["id"]; }, $experiences);
+      $stmt = $pdo->prepare($query);
+      $stmt->execute($experiences_ids);
+      $job_skills = $stmt->fetchAll();
       ?>
           <label>
             <?= $job["title"] ?>
-            <input type="radio" checked name="selected" style="display: none;" value="<?= $job[" title"] ?>" />
+            <input type="radio" checked name="selected" style="display: none;" value="<?= $job["id"] ?>" />
           </label>
 
           <article>
-            <h3>
-              <?= $job["title"] ?>
-            </h3>
-            <div>
               <div>
+                <div>
+                  <?= $job["title"] ?>
+                </div>
               </div>
-
               <div>
                 <p>
                   <?= $job["brief"] ?>
                 </p>
 
-                <h4>
+                <h3>
                   <?= $job["title"] ?>
-                </h4>
-
+                </h3>
+                <div class="marquee"> 
+                <ul>
+<?php foreach ($job_skills as $skill) {
+    ?>
+                    <li> // <?= $skill["title"] ?> </li>
+<?php
+}
+      ?>
+                </ul>
+                </div>
+                <dl>
+                <dd><data><?= $duration->format("%y years") ?> of experience</data></dd>
+                  <dd></dd>
+                </dl>
+                
               </div>
-            </div>
           </article>
           <?php
   }
