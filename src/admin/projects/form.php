@@ -55,9 +55,7 @@ if (isset($project)) {
 
     <label>
       <span>Brief</span>
-      <textarea name="brief" spellcheck="true" rows="2">
-        <?= $project["brief"] ?>
-      </textarea>
+      <textarea name="brief" spellcheck="true" rows="2"><?= $project["brief"] ?></textarea>
     </label>
 
     <label>

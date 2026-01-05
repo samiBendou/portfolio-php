@@ -80,8 +80,12 @@ $query = "SELECT  experience.id,
           ORDER BY experience.started DESC";
 $experiences = $pdo->query($query);
 
-$subquery =  "WITH  ranges AS ( SELECT experience_skill.skill as skill, started, COALESCE(ended, date('now')) AS ended 
-                                FROM experience_skill JOIN experience ON experience_skill.experience = experience.id),
+$union_sub = "(SELECT skill, started, ended FROM experience_skill JOIN experience ON experience_skill.experience = experience.id) 
+              UNION (SELECT skill, started, ended FROM project_skill JOIN project ON project_skill.project = project.id)";
+
+
+$subquery =  "WITH  ranges AS ( SELECT skill, started, COALESCE(ended, date('now')) AS ended 
+                                FROM ($union_sub)),
                         groups AS ( SELECT skill, started, ended, MAX(ended) OVER (ORDER BY started ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING) AS prev_max_end 
                                     FROM ranges ORDER BY started),
                         merged AS ( SELECT  skill,
@@ -103,13 +107,39 @@ $subquery2 = "SELECT experience_skill.skill as skill, JSON_AGG(experience.title)
 
 
 $query = "SELECT  skill.kind as kind,
-                  JSON_AGG(JSON_BUILD_OBJECT('id', skill.id, 'title', skill.title, 'level', skill.level, 'duration', dates.duration, 'experiences', experiences.titles) ORDER BY skill.title) as skills 
+                  JSON_AGG(JSON_BUILD_OBJECT( 'id', skill.id, 
+                                              'title', skill.title, 
+                                              'level', skill.level, 
+                                              'duration', dates.duration, 
+                                              'experiences', experiences.titles) 
+                  ORDER BY skill.title) as skills 
           FROM skill  
-          JOIN ($subquery) AS dates ON skill.id=dates.skill
-          JOIN ($subquery2) AS experiences ON experiences.skill=skill.id
+          LEFT JOIN ($subquery) AS dates ON skill.id=dates.skill
+          LEFT JOIN ($subquery2) AS experiences ON experiences.skill=skill.id
           GROUP BY skill.kind
           ORDER BY kind ASC";
 $skills = $pdo->query($query);
+
+
+$query = "SELECT  project.id, 
+                  project.title, 
+                  project_category.title AS category, 
+                  project.brief,
+                  project.details,
+                  project.started, 
+                  project.ended, 
+                  ((COALESCE(project.ended, date('now')) - project.started) / 30) AS duration, 
+                  experience.title as experience_title,
+                  project.link as link,
+                  JSON_AGG(DISTINCT skill.title ORDER BY skill.title ASC) FILTER (WHERE skill.title IS NOT NULL) AS skills
+          FROM project
+          LEFT JOIN experience ON project.experience = experience.id
+          LEFT JOIN project_category ON project_category.id = project.category
+          LEFT JOIN project_skill ON project_skill.project = project.id
+          LEFT JOIN skill ON project_skill.skill = skill.id
+          GROUP BY  project.id, project_category.title, experience.id
+          ORDER BY project.category, project.started DESC";
+$projects = $pdo->query($query)->fetchAll();
 
 $query = "SELECT experience.title AS title, organization.title AS organization, organization.link AS link, location 
           FROM experience JOIN organization ON experience.organization = organization.id
@@ -225,6 +255,11 @@ file_put_contents($cache_file, '<?php return ' . var_export([
 
             <dl>
               <dt>
+                Sami Dahoux
+              </dt>
+              <div></div>
+              <div></div>
+              <dt>
                 <?= $last_job["title"] ?>
               </dt>
               <div>@</div>
@@ -252,8 +287,6 @@ file_put_contents($cache_file, '<?php return ' . var_export([
               and
               <em>creative</em> way to <em>imagine</em> and <em>build</em> the world we want to live in.
             </p>
-
-            <p><strong>Make mankind dreams come true</strong></p>
 
             <ul class="cta-list">
               <li><a href="#contact" class="cta">Let's meet</a></li>
@@ -417,6 +450,66 @@ file_put_contents($cache_file, '<?php return ' . var_export([
         </article>
         <?php } ?>
         </section>
+
+      <section id="projects">
+        <h2>My projects</h2>
+        <div>
+          <?php
+            $last_category = $projects[0]["category"];
+?>
+            <h3><?= $last_category ?></h3>
+            <?php foreach ($projects as $project) { ?>
+            <?php if ($project["category"] !== $last_category) { ?>
+            <h3><?= $project["category"]?></h3>
+            <?php
+  $last_category = $project["category"];
+            }
+                ?>
+            <label>
+            <?= $project["title"] ?><input type="radio" checked name="projects" value="<?= $project["id"] ?>" />
+          </label>
+
+          <article class="box">
+            <div>
+              <dl>
+                <dd>
+                  <?= $project["duration"] ?> months
+                </dd>
+                <div>-</div>
+<dd>
+              <?= new DateTime($project["started"])->format("M Y") ?>
+            </dd>
+            -
+            <dd>
+              <?= $project["ended"] ? new DateTime($project["ended"])->format("M Y") : "Present" ?>
+            </dd>
+              </dl>
+
+              <h4>
+                <?= $project["title"] ?>
+              </h4>
+              <div class="marquee">
+                <ul class="skills">
+                  <?php foreach (json_decode($project["skills"], true) as $skill) { ?>
+                  <li>
+                    <?= $skill ?>
+                  </li>
+                  <?php } ?>
+                </ul>
+              </div>
+              <a class="cta" href="/DAHOUX-Sami-generic-resume.pdf" target="_blank">Get resume</a>
+              
+              <p>  
+                <?= $project["brief"] ?>
+              </p>
+              <div class="prose">
+                <?= $project["details"] ?>
+              </div>
+            </div>
+          </article>
+          <?php } ?>
+        </div>
+      </section>
     </main>
     <div id="alt-indicator">
       <div id="alt-center"></div>
