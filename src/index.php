@@ -224,8 +224,6 @@ file_put_contents($cache_file, '<?php return ' . var_export([
       </label>
       <a href="/">sami.bendou.space</a>
       <div>
-
-
         <h1 style="display: none;">Sami Dahoux's portfolio</h1>
 
         <nav>
@@ -257,12 +255,9 @@ file_put_contents($cache_file, '<?php return ' . var_export([
               <dt>
                 Sami Dahoux
               </dt>
-              <div></div>
-              <div></div>
               <dt>
                 <?= $last_job["title"] ?>
               </dt>
-              <div>@</div>
               <dd>
                 <a href="<?= $last_job["link"] ?>">
                   <?= $last_job["organization"] ?>
@@ -271,7 +266,6 @@ file_put_contents($cache_file, '<?php return ' . var_export([
               <dt>
                 <?= $last_education["title"] ?>
               </dt>
-              <div>@</div>
               <dd>
                 <a href="<?= $last_education["link"] ?>">
                   <?= $last_education["organization"] ?>
@@ -299,19 +293,17 @@ file_put_contents($cache_file, '<?php return ' . var_export([
 
       <section id="jobs">
         <h2>What I do</h2>
-        <div>
+        <div class="right-screen">
           <?php foreach ($jobs as $job) {?>
           <label>
             <?= $job["title"] ?><input type="radio" checked name="jobs" value="<?= $job["id"] ?>" />
           </label>
 
           <article class="box">
-            <div>
               <dl>
                 <dd>
                   <?= $job["duration"] ?> year(s) of experience
                 </dd>
-                <div>-</div>
                 <dd>Since
                   <?= new DateTime($job["started"])->format("Y") ?>
                 </dd>
@@ -334,7 +326,6 @@ file_put_contents($cache_file, '<?php return ' . var_export([
               <div class="prose">
                 <?= $job["brief"] ?>
               </div>
-            </div>
           </article>
           <?php } ?>
         </div>
@@ -378,11 +369,10 @@ file_put_contents($cache_file, '<?php return ' . var_export([
             ?>
 
         <article>
-          <dl>
+          <dl class="dates">
             <dd>
               <?= new DateTime($experience["started"])->format("M Y") ?>
             </dd>
-            -
             <dd>
               <?= $experience["ended"] ? new DateTime($experience["ended"])->format("M Y") : "Present" ?>
             </dd>
@@ -390,19 +380,11 @@ file_put_contents($cache_file, '<?php return ' . var_export([
           <h3>
             <?= $experience["title"] ?>
           </h3>
-          <dl>
-          <dd>
-              <?= $experience["kind"] ?>
-          </dd>
           <?php if ($experience["organization_title"]) { ?>
-          <div>@</div>
-          <dd>
           <a href="<?= $experience["organization_link"] ?>">
               <?= $experience["organization_title"] ?>
           </a>
-          </dd>           
           <?php } ?>
-          </dl>
           <label>
             View more<input type="checkbox" value="<?= $experience["id"] ?>" />
           </label>
@@ -413,7 +395,6 @@ file_put_contents($cache_file, '<?php return ' . var_export([
                 <?= $experience["duration"] ?> month(s)
               </dd>
               <?php if ($location && $location["city"] !== null) { ?>
-              <div>@</div>
               <dd>
               <a href="<?= "https://www.google.com/maps/place/$url_location" ?>">
                   <?= $location["city"] ?>
@@ -437,23 +418,22 @@ file_put_contents($cache_file, '<?php return ' . var_export([
               </ul>
             </div>
 
+            <a class="cta" href="/DAHOUX-Sami-generic-resume.pdf" target="_blank">Get resume</a>
+
             <p>
               <?= $experience["brief"] ?>
             </p>
             <div class="prose">
               <?= $experience["details"] ?>
             </div>
-            
-            <a class="cta" href="/DAHOUX-Sami-generic-resume.pdf" target="_blank">Get resume</a>
-
-          </section>
+                      </section>
         </article>
         <?php } ?>
         </section>
 
       <section id="projects">
         <h2>My projects</h2>
-        <div>
+        <div class="right-screen">
           <?php
             $last_category = $projects[0]["category"];
 ?>
@@ -470,16 +450,13 @@ file_put_contents($cache_file, '<?php return ' . var_export([
           </label>
 
           <article class="box">
-            <div>
               <dl>
                 <dd>
                   <?= $project["duration"] ?> months
                 </dd>
-                <div>-</div>
 <dd>
               <?= new DateTime($project["started"])->format("M Y") ?>
             </dd>
-            -
             <dd>
               <?= $project["ended"] ? new DateTime($project["ended"])->format("M Y") : "Present" ?>
             </dd>
@@ -505,7 +482,6 @@ file_put_contents($cache_file, '<?php return ' . var_export([
               <div class="prose">
                 <?= $project["details"] ?>
               </div>
-            </div>
           </article>
           <?php } ?>
         </div>
