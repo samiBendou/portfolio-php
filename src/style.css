@@ -22,8 +22,8 @@
 }
 
 :root {
-  --small-bottom-border-base: inset 0px -2px 0px;
-  --large-bottom-border-base: inset 0px -4px 0px;
+  --small-bottom-border-base: inset 2px -2px 2px;
+  --large-bottom-border-base: inset 4px -4px 2px;
   --x-large-bottom-border-base: inset 0px -6px 0px;
   --small-border-base: inset 0px 0px 0px 2px;
   --small-bottom-border: var(--small-bottom-border-base) var(--primary);

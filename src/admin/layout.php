@@ -23,7 +23,6 @@ if (!isset($content)) {
     rel="stylesheet">
   <link rel="stylesheet" href="/admin.css">
   <link rel="stylesheet" href="https://cdn.linearicons.com/free/1.0.0/icon-font.min.css">
-  <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
 </head>
 
@@ -44,7 +43,7 @@ if (!isset($content)) {
         </li>
         <li>
           <a href="/admin/skills/">Skills</a>
-        </li>
+        </li/>
         <li>
           <a href="/admin/organizations/">Organizations</a>
         </li>
