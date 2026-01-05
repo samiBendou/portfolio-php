@@ -94,14 +94,16 @@ h2::after {
   white-space: nowrap;
 }
 
-h3 {
+h3,
+h4 {
   display: flex;
   align-items: start;
   gap: var(--space-3);
   width: 100%;
 }
 
-h3::after {
+h3::after,
+h4::after {
   content: " ";
   flex: 1;
   background-image: repeating-linear-gradient(90deg,
@@ -211,6 +213,7 @@ label:has(>input) {
 
 
 label:has(>input:focus),
+label:has(>input:focus:checked),
 label:has(>input):hover {
   background-color: var(--primary);
   color: var(--neutral-2);
@@ -266,6 +269,13 @@ label:has(>input:checked) {
   animation: 10s marquee linear infinite;
   white-space: nowrap;
   padding-right: var(--space-2);
+}
+
+.box {
+  background-color: var(--neutral-1);
+  border: var(--medium-border);
+  padding: var(--space-2);
+  margin: 0 var(--space-2);
 }
 
 @keyframes marquee {
@@ -499,6 +509,10 @@ footer>p {
   margin: var(--space-5) 0;
 }
 
+#jobs article dl {
+  flex-direction: row;
+}
+
 #jobs>div {
   display: flex;
   flex-wrap: wrap;
@@ -521,10 +535,6 @@ footer>p {
 #jobs article {
   order: 99;
   display: none;
-  background-color: var(--neutral-1);
-  border: var(--medium-border);
-  padding: var(--space-2);
-  margin: 0 var(--space-2);
   justify-content: stretch;
   gap: var(--space-2);
   max-width: 100%;
@@ -553,23 +563,26 @@ footer>p {
   width: max-content;
 }
 
-#jobs article .skills li {
+.skills li {
+  display: flex;
   flex-shrink: 0;
+  gap: var(--space-2);
 }
 
-#jobs article .skills li::before {
-  content: " // ";
+.skills li::before {
+  content: "//";
 }
 
-#jobs article .marquee {
+.marquee {
   width: 100%;
   flex-shrink: 0;
 }
 
-#jobs article .skills {
+.skills {
+  gap: var(--space-2);
   display: flex;
   flex-wrap: nowrap;
-  animation-duration: 3s;
+  animation-duration: 30s;
 }
 
 @media(min-width: 1366px) {
@@ -647,10 +660,6 @@ footer>p {
 #experiences section {
   display: none;
   flex-direction: column;
-  background-color: var(--neutral-1);
-  border: var(--medium-border);
-  padding: var(--space-2);
-  margin: var(--space-2) 0;
   justify-content: stretch;
   gap: var(--space-5);
   max-width: 100%;
@@ -661,4 +670,93 @@ footer>p {
     padding: var(--space-5);
     margin: var(--space-5) 0;
   }
+}
+
+article>section>p,
+article>p {
+  font-style: italic;
+}
+
+article .prose {
+  width: min(100% 96rem);
+}
+
+article .prose p {
+  margin: var(--space-3) 0;
+}
+
+article .prose ul {
+  list-style-type: "- ";
+  padding-left: 2ch;
+}
+
+#skills {
+  margin: var(--space-3);
+}
+
+@media(min-width: 1366px) {
+  #skills {
+    margin: var(--space-5);
+  }
+}
+
+#skills>h2 {
+  margin: var(--space-5) 0;
+}
+
+#skills>div {
+  display: flex;
+  gap: var(--space-5);
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+#skills>div>div {
+  flex-basis: 10%;
+  flex-grow: 1;
+  max-width: 100%;
+}
+
+#skills .list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  width: 100%;
+}
+
+#skills .box {
+  width: 100%;
+  overflow: hidden;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+#skills .box ul {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+#skills .box li {
+  white-space: wrap;
+}
+
+#skills label {
+  white-space: nowrap;
+  text-wrap: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#skills .level-3,
+#skills .level-4 {
+  font-weight: bold;
+}
+
+#skills .box {
+  display: none;
+}
+
+#skills label:has(input:checked)+.box {
+  display: flex;
 }

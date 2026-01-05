@@ -1,4 +1,5 @@
 <?php
+require_once(__DIR__ . "/admin/skills/consts.php");
 
 $cache_file = __DIR__ . "/cache.php";
 
@@ -72,12 +73,43 @@ $query = "SELECT  experience.id,
                   organization.link as organization_link,
                   JSON_AGG(DISTINCT skill.title ORDER BY skill.title ASC) FILTER (WHERE skill.title IS NOT NULL) AS skills
           FROM experience
+          LEFT JOIN organization ON experience.organization = organization.id
           LEFT JOIN experience_skill ON experience_skill.experience = experience.id
           LEFT JOIN skill ON experience_skill.skill = skill.id
-          JOIN organization ON experience.organization = organization.id
           GROUP BY  experience.id, organization.id
           ORDER BY experience.started DESC";
-$experiences = $pdo->query($query)->fetchAll();
+$experiences = $pdo->query($query);
+
+$subquery =  "WITH  ranges AS ( SELECT experience_skill.skill as skill, started, COALESCE(ended, date('now')) AS ended 
+                                FROM experience_skill JOIN experience ON experience_skill.experience = experience.id),
+                        groups AS ( SELECT skill, started, ended, MAX(ended) OVER (ORDER BY started ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING) AS prev_max_end 
+                                    FROM ranges ORDER BY started),
+                        merged AS ( SELECT  skill,
+                                            started, 
+                                            ended,
+                                            CASE
+                                              WHEN prev_max_end IS NULL OR started > prev_max_end THEN 1
+                                                ELSE 0
+                                              END AS is_new_group
+                                    FROM groups
+                                  ),
+                        numbered AS ( SELECT skill, started, ended, SUM(is_new_group) OVER (ORDER BY started) AS grp FROM merged), 
+                        dates AS (    SELECT skill, MAX(ended) as ended, MIN(started) as started FROM numbered GROUP BY grp, skill)
+                  SELECT skill, MIN(started) AS started, ROUND(SUM(ended - started) / 365.0) AS duration FROM dates GROUP BY skill";
+
+$subquery2 = "SELECT experience_skill.skill as skill, JSON_AGG(experience.title) as titles
+              FROM experience_skill JOIN experience ON experience_skill.experience = experience.id
+              GROUP BY experience_skill.skill";
+
+
+$query = "SELECT  skill.kind as kind,
+                  JSON_AGG(JSON_BUILD_OBJECT('id', skill.id, 'title', skill.title, 'level', skill.level, 'duration', dates.duration, 'experiences', experiences.titles) ORDER BY skill.title) as skills 
+          FROM skill  
+          JOIN ($subquery) AS dates ON skill.id=dates.skill
+          JOIN ($subquery2) AS experiences ON experiences.skill=skill.id
+          GROUP BY skill.kind
+          ORDER BY kind ASC";
+$skills = $pdo->query($query);
 
 $query = "SELECT experience.title AS title, organization.title AS organization, organization.link AS link, location 
           FROM experience JOIN organization ON experience.organization = organization.id
@@ -197,7 +229,7 @@ file_put_contents($cache_file, '<?php return ' . var_export([
               </dt>
               <div>@</div>
               <dd>
-                <a href="<?= $last_job[" link"] ?>">
+                <a href="<?= $last_job["link"] ?>">
                   <?= $last_job["organization"] ?>
                 </a>
               </dd>
@@ -206,16 +238,16 @@ file_put_contents($cache_file, '<?php return ' . var_export([
               </dt>
               <div>@</div>
               <dd>
-                <a href="<?= $last_education[" link"] ?>">
+                <a href="<?= $last_education["link"] ?>">
                   <?= $last_education["organization"] ?>
                 </a>
               </dd>
             </dl>
 
             <p>
-              I'm an <em>8-years</em> experienced <em>software engineer</em> with a strong interest in
-              <em>web technologies</em>
-              and <em>cyber-physical systems</em>. I believe that engineering is an
+              I am an engineer with a passionated with both
+              <em>software</em>
+              <em>cyber-physical systems</em>. I believe that engineering is an
               <em>artistic</em>
               and
               <em>creative</em> way to <em>imagine</em> and <em>build</em> the world we want to live in.
@@ -235,29 +267,29 @@ file_put_contents($cache_file, '<?php return ' . var_export([
       <section id="jobs">
         <h2>What I do</h2>
         <div>
-          <?php foreach ($jobs as $experience) {?>
+          <?php foreach ($jobs as $job) {?>
           <label>
-            <?= $experience["title"] ?>
-            <input type="radio" checked name="jobs" value="<?= $experience[" id"] ?>" />
+            <?= $job["title"] ?><input type="radio" checked name="jobs" value="<?= $job["id"] ?>" />
           </label>
 
-          <article>
+          <article class="box">
             <div>
-              <div>
-                <?= $experience["title"] ?>
-              </div>
-            </div>
-            <div>
-              <p>
-                <?= $experience["brief"] ?>
-              </p>
+              <dl>
+                <dd>
+                  <?= $job["duration"] ?> year(s) of experience
+                </dd>
+                <div>-</div>
+                <dd>Since
+                  <?= new DateTime($job["started"])->format("Y") ?>
+                </dd>
+              </dl>
 
               <h3>
-                <?= $experience["title"] ?>
+                <?= $job["title"] ?>
               </h3>
               <div class="marquee">
                 <ul class="skills">
-                  <?php foreach (json_decode($experience["skills"], true) as $skill) { ?>
+                  <?php foreach (json_decode($job["skills"], true) as $skill) { ?>
                   <li>
                     <?= $skill ?>
                   </li>
@@ -265,17 +297,43 @@ file_put_contents($cache_file, '<?php return ' . var_export([
                 </ul>
               </div>
               <a class="cta" href="/DAHOUX-Sami-generic-resume.pdf" target="_blank">Get resume</a>
-              <dl>
-                <dd>
-                  <?= $experience["duration"] ?> year(s) of experience
-                </dd>
-                <dd>Since
-                  <?= new DateTime($experience["started"])->format("Y") ?>
-                </dd>
-              </dl>
+              
+              <div class="prose">
+                <?= $job["brief"] ?>
+              </div>
             </div>
           </article>
           <?php } ?>
+        </div>
+      </section>
+
+      <section id="skills">
+        <h2>My know-how</h2>
+        <div>
+        <?php foreach ($skills as $kind) { ?>
+        <div>
+        <h3><?= $kind["kind"] ?></h3>
+        <div class="list"> 
+          <?php foreach (json_decode($kind["skills"], true) as $skill) { ?>
+          <label class="level-<?= $skill["level"] ?>">
+            <?= $skill["title"] ?><input type="radio" name="skill" value="<?= $skill["id"] ?>" />
+        </label>
+        <article class="box">
+          <dl>
+              <dd><?= $skill["duration"] ?> year(s)</dd>
+              <dd><?= SKILL_LEVEL[$skill["level"]] ?></dd>
+          </dl>
+          <h4>Related</h4>
+          <ul>
+            <?php foreach ($skill["experiences"] as $experience) { ?>
+            <li><?= $experience ?></li>
+            <?php } ?>
+          </ul>
+        </article>
+        <?php } ?>
+        </div>
+</div>
+        <?php } ?>
         </div>
       </section>
 
@@ -303,19 +361,20 @@ file_put_contents($cache_file, '<?php return ' . var_export([
           <dd>
               <?= $experience["kind"] ?>
           </dd>
+          <?php if ($experience["organization_title"]) { ?>
           <div>@</div>
           <dd>
           <a href="<?= $experience["organization_link"] ?>">
               <?= $experience["organization_title"] ?>
           </a>
           </dd>           
+          <?php } ?>
           </dl>
           <label>
-            View more
-            <input type="checkbox" value="<?= $experience[" id"] ?>" />
+            View more<input type="checkbox" value="<?= $experience["id"] ?>" />
           </label>
 
-          <section>
+          <section class="box">
             <dl>
               <dd>
                 <?= $experience["duration"] ?> month(s)
@@ -348,9 +407,10 @@ file_put_contents($cache_file, '<?php return ' . var_export([
             <p>
               <?= $experience["brief"] ?>
             </p>
-
-            <?= $experience["details"] ?>
-
+            <div class="prose">
+              <?= $experience["details"] ?>
+            </div>
+            
             <a class="cta" href="/DAHOUX-Sami-generic-resume.pdf" target="_blank">Get resume</a>
 
           </section>

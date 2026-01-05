@@ -21,7 +21,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $stmt->execute([
       ":id" => $id,
       ":title" => htmlspecialchars($_POST["title"]),
-      ":brief" => htmlspecialchars($_POST["brief"])
+      ":brief" => $_POST["brief"]
     ]);
 
     header("Location: index.php");
@@ -46,7 +46,10 @@ ob_start();
 
       <label>
         <span>Brief</span>
-        <textarea required spellcheck="true" name="brief" rows="5"><?= $job["brief"] ?></textarea>
+        <div id="editor-container">
+          <div id="editor"><?= $job["brief"] ?></div>
+        </div>
+        <textarea name="brief" id="brief-input" style="display:none;"><?= $job["brief"] ?></textarea>
       </label>
 
     </fieldset>
@@ -54,6 +57,27 @@ ob_start();
     <button>Submit</button>
   </form>
 </main>
+
+<script>
+  const quill = new Quill('#editor', {
+    modules: {
+      toolbar: [
+        ['bold', 'italic', 'underline', 'strike'],
+        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+        [{ 'indent': '-1'}, { 'indent': '+1' }],
+        ['link'],
+        ['clean']
+      ]
+    }
+  });
+
+  const form = document.querySelector('form');
+  const details = document.getElementById('brief-input');
+
+  form.addEventListener('submit', function() {
+    details.value = quill.getSemanticHTML().replaceAll("&nbsp;", " ");
+  });
+</script>
 
 <?php
 $content = ob_get_clean();
