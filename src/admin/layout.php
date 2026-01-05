@@ -37,6 +37,9 @@ if (!isset($content)) {
           <a href="/admin/projects/">Projects</a>
         </li>
         <li>
+          <a href="/admin/categories/">Categories</a>
+        </li>
+        <li>
           <a href="/admin/experiences/">Experiences</a>
         </li>
         <li>
