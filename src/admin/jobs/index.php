@@ -32,7 +32,7 @@ ob_start();
             </a>
           </th>
           <td>
-            <?= $job["brief"] ?>
+            <?= strip_tags($job["brief"]) ?>
           </td>
           <td>
             <a href="remove.php?id=<?= $job["id"] ?>">

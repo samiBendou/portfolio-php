@@ -426,7 +426,7 @@ file_put_contents($cache_file, '<?php return ' . var_export([
   <footer>
     <p id="copyright">
       © <a href="https://portfolio.bendou.space">Sami Dahoux</a> and
-      <a href="https://www.clarapeker.com/">Clara Peker</a> 2025, All Rights Reserved
+      <a href="https://www.clarapeker.com/">Clara Peker</a> 2026, All Rights Reserved
     </p>
   </footer>
 </body>

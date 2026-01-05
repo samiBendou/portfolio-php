@@ -66,16 +66,30 @@ create table experience_skill (
   primary key(experience, skill)
 );
 
---
--- create table project (
---   id serial primary key,
---   title varchar(255) not null,
---   brief text not null default '',
---   details text not null default '',
---   start datetime not null,
---   end datetime,
---   link varchar(255),
---   picture varchar(255)
--- );
---
 
+create table project_category(
+  id serial primary key,
+  title varchar(255),
+
+  unique(title)
+);
+
+create table project (
+  id serial primary key,
+  title varchar(255) not null,
+  brief text not null default '',
+  details text not null default '',
+  started date not null,
+  ended date,
+  link varchar(255),
+  
+  experience integer references experience on delete set null,
+  category integer not null references project_category on delete set null
+);
+
+create table project_skill(
+  project integer not null references project on delete cascade,
+  skill integer not null references skill on delete cascade,
+
+  primary key(project, skill)
+);
