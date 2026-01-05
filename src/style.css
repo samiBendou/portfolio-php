@@ -15,7 +15,7 @@
     --secondary-3: white;
     --secondary-2: #379683;
     --secondary-1: #5cdb95;
-    --neutral-2: black;
+    --neutral-2: #111111;
     /* #05386b; */
     --neutral-1: black;
   }
@@ -94,6 +94,31 @@ h2::after {
   white-space: nowrap;
 }
 
+h3 {
+  display: flex;
+  align-items: start;
+  gap: var(--space-3);
+  width: 100%;
+}
+
+h3::after {
+  content: " ";
+  flex: 1;
+  background-image: repeating-linear-gradient(90deg,
+      transparent,
+      transparent 0.5ch,
+      var(--primary) 0.5ch,
+      var(--primary) 1ch);
+  background-size: 1ch 0.1em;
+  background-position: 0 0.5em;
+  background-repeat: repeat-x;
+  height: 1em;
+  position: relative;
+  overflow: hidden;
+  text-overflow: clip;
+  white-space: nowrap;
+}
+
 ul {
   list-style-type: none;
   margin: 0;
@@ -138,6 +163,7 @@ strong {
   line-height: 1em;
 }
 
+data,
 time,
 dd {
   text-transform: uppercase;
@@ -153,6 +179,10 @@ dl {
   margin: 0;
 }
 
+dt {
+  font-weight: bold;
+}
+
 dd {
   margin: 0;
   display: flex;
@@ -164,12 +194,23 @@ q {
   quotes: none;
 }
 
+label>input {
+  width: 0;
+  height: 0;
+  opacity: 0;
+  overflow: hidden;
+  appearance: none;
+}
+
 label:has(>input) {
+  user-select: none;
   cursor: pointer;
   padding: var(--space-1);
   color: var(--secondary-1);
 }
 
+
+label:has(>input:focus),
 label:has(>input):hover {
   background-color: var(--primary);
   color: var(--neutral-2);
@@ -380,6 +421,7 @@ footer>p {
   flex-shrink: 0;
   text-wrap: nowrap;
   padding: var(--space-2);
+  margin-bottom: var(--space-5);
   display: flex;
 }
 
@@ -437,8 +479,16 @@ footer>p {
   flex-direction: column;
   gap: var(--space-5);
   margin: var(--space-2);
-  flex-basis: 10%;
+  flex-basis: 20%;
   flex-grow: 1;
+}
+
+
+@media(min-width: 1366px) {
+  #about>div:last-child>div:last-child {
+    margin: var(--space-5);
+    display: flex;
+  }
 }
 
 #jobs {
@@ -446,7 +496,7 @@ footer>p {
 }
 
 #jobs>h2 {
-  margin-bottom: var(--space-3);
+  margin: var(--space-5) 0;
 }
 
 #jobs>div {
@@ -508,7 +558,7 @@ footer>p {
 }
 
 #jobs article .skills li::before {
-  content: " // "
+  content: " // ";
 }
 
 #jobs article .marquee {
@@ -549,5 +599,66 @@ footer>p {
     gap: var(--space-5);
     padding: var(--space-5);
     margin: 0 var(--space-5);
+  }
+}
+
+#experiences {
+  margin: var(--space-3);
+}
+
+#experiences>h2 {
+  margin: var(--space-5) 0;
+}
+
+#experiences dl {
+  align-items: start;
+  flex-direction: row;
+  flex-wrap: nowrap;
+}
+
+#experiences article>dl:first-child {
+  align-self: end;
+}
+
+#experiences article>dl:not(:first-child) {
+  width: fit-content;
+}
+
+#experiences label:has(>input)~section {
+  display: none;
+}
+
+#experiences label:has(>input:checked)~section {
+  display: flex;
+}
+
+#experiences article {
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  max-width: 1024px;
+}
+
+#experiences article>a {
+  width: fit-content;
+}
+
+#experiences section {
+  display: none;
+  flex-direction: column;
+  background-color: var(--neutral-1);
+  border: var(--medium-border);
+  padding: var(--space-2);
+  margin: var(--space-2) 0;
+  justify-content: stretch;
+  gap: var(--space-5);
+  max-width: 100%;
+}
+
+@media(min-width: 1366px) {
+  #experiences section {
+    padding: var(--space-5);
+    margin: var(--space-5) 0;
   }
 }
