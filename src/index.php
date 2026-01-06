@@ -106,7 +106,7 @@ $subquery2 = "SELECT experience_skill.skill as skill, JSON_AGG(experience.title)
               GROUP BY experience_skill.skill";
 
 
-$query = "SELECT  skill.kind as kind,
+$query = "SELECT  skill_category.title as kind,
                   JSON_AGG(JSON_BUILD_OBJECT( 'id', skill.id, 
                                               'title', skill.title, 
                                               'level', skill.level, 
@@ -114,10 +114,11 @@ $query = "SELECT  skill.kind as kind,
                                               'experiences', experiences.titles) 
                   ORDER BY skill.title) as skills 
           FROM skill  
+          LEFT JOIN skill_category ON skill.category=skill_category.id
           LEFT JOIN ($subquery) AS dates ON skill.id=dates.skill
           LEFT JOIN ($subquery2) AS experiences ON experiences.skill=skill.id
-          GROUP BY skill.kind
-          ORDER BY kind ASC";
+          GROUP BY skill_category.title 
+          ORDER BY skill_category.title ASC";
 $skills = $pdo->query($query);
 
 

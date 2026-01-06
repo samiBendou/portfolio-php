@@ -28,11 +28,18 @@ create table job (
   unique(title)
 );
 
+create table skill_category(
+  id serial primary key,
+  title varchar(255),
+
+  unique(title)
+);
+
 create table skill (
   id serial primary key,
-  kind skill_kind not null,
   title varchar(255) not null,
   level integer not null default 0,
+  category integer not null references skill_category,
 
   unique(title)
 );

@@ -5,7 +5,13 @@ require_once("consts.php");
 $dsn = $_ENV["DB_DSN"];
 $pdo = new PDO($dsn);
 
-$query = "SELECT id, title, kind, level FROM skill ORDER BY title ASC";
+$query = "SELECT  skill.id, 
+                  skill.title, 
+                  skill.level, 
+                  skill_category.title as category  
+          FROM skill 
+          LEFT JOIN skill_category ON skill.category = skill_category.id 
+          ORDER BY skill.title ASC";
 $skills = $pdo->query($query);
 
 $title = "Skills";
@@ -18,8 +24,8 @@ ob_start();
       <thead>
         <tr>
           <th>Title</th>
-          <th>Kind</th>
           <th>Level</th>
+          <th>Category</th>
           <th>Actions</th>
         </tr>
       </thead>
@@ -35,10 +41,10 @@ ob_start();
             </a>
           </th>
           <td>
-            <?= SKILL_KIND[$skill["kind"]] ?>
+            <?= SKILL_LEVEL[$skill["level"]] ?>
           </td>
           <td>
-            <?= SKILL_LEVEL[$skill["level"]] ?>
+            <?= $skill["category"] ?>
           </td>
           <td>
             <a href="remove.php?id=<?= $skill["id"] ?>">
