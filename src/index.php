@@ -101,13 +101,17 @@ $subquery =  "WITH  ranges AS ( SELECT skill, started, COALESCE(ended, date('now
                         dates AS (    SELECT skill, MAX(ended) as ended, MIN(started) as started FROM numbered GROUP BY grp, skill)
                   SELECT skill, MIN(started) AS started, ROUND(SUM(ended - started) / 365.0) AS duration FROM dates GROUP BY skill";
 
-$subquery_experience_skill = "SELECT experience_skill.skill as skill, JSON_AGG(experience.title) as titles
-              FROM experience_skill JOIN experience ON experience_skill.experience = experience.id
-              GROUP BY experience_skill.skill";
+$subquery_experience_skill = "SELECT  experience_skill.skill as skill, 
+                                      JSON_AGG(JSON_BUILD_OBJECT( 'title', experience.title,
+                                                                  'id', experience.id)) as titles
+                              FROM experience_skill JOIN experience ON experience_skill.experience = experience.id
+                              GROUP BY experience_skill.skill";
 
-$subquery_project_skill = "SELECT project_skill.skill as skill, JSON_AGG(project.title) as titles
-              FROM project_skill JOIN project ON project_skill.project = project.id
-              GROUP BY project_skill.skill";
+$subquery_project_skill = "SELECT project_skill.skill as skill, 
+                                  JSON_AGG(JSON_BUILD_OBJECT( 'title', project.title,
+                                                              'id', project.id)) as titles
+                            FROM project_skill JOIN project ON project_skill.project = project.id
+                            GROUP BY project_skill.skill";
 
 $query = "SELECT  skill_category.title as kind,
                   JSON_AGG(JSON_BUILD_OBJECT( 'id', skill.id, 
@@ -357,7 +361,9 @@ file_put_contents($cache_file, '<?php return ' . var_export([
           <ul>
             <?php
                 foreach ($skill["experiences"] as $experience) { ?>
-            <li><?= $experience ?></li>
+            <li>
+              <button data-experience="<?= $experience["id"] ?>"><?= $experience["title"] ?></button>
+            </li>
             <?php } ?>
           </ul>
           <?php } ?>
@@ -367,7 +373,9 @@ file_put_contents($cache_file, '<?php return ' . var_export([
           <ul>
             <?php
                 foreach ($skill["projects"] as $project) { ?>
-            <li><?= $project ?></li>
+            <li>
+              <button data-project="<?= $project["id"] ?>"><?= $project["title"] ?></button>
+            </li>
             <?php } ?>
           </ul>
           <?php } ?>
@@ -403,7 +411,7 @@ file_put_contents($cache_file, '<?php return ' . var_export([
               <?= $experience["organization_title"] ?>
           </a>
           <?php } ?>
-          <label>
+          <label id="experience-<?= $experience["id"] ?>" >
             View more<input type="checkbox" value="<?= $experience["id"] ?>" />
           </label>
 
@@ -426,6 +434,11 @@ file_put_contents($cache_file, '<?php return ' . var_export([
               </dd>
               <?php } ?>
           </dl>
+
+              <h4>
+                <?= $experience["title"] ?>
+              </h4>
+ 
             <div class="marquee">
               <ul class="skills">
                 <?php
@@ -445,7 +458,7 @@ file_put_contents($cache_file, '<?php return ' . var_export([
             <div class="prose">
               <?= $experience["details"] ?>
             </div>
-                      </section>
+          </section>
         </article>
         <?php } ?>
         </section>
@@ -464,7 +477,7 @@ file_put_contents($cache_file, '<?php return ' . var_export([
   $last_category = $project["category"];
             }
                 ?>
-            <label>
+            <label id="project-<?= $project["id"] ?>">
             <?= $project["title"] ?><input type="radio" checked name="projects" value="<?= $project["id"] ?>" />
           </label>
 
@@ -504,6 +517,7 @@ file_put_contents($cache_file, '<?php return ' . var_export([
               <p>  
                 <?= $project["brief"] ?>
               </p>
+
               <div class="prose">
                 <?= $project["details"] ?>
               </div>

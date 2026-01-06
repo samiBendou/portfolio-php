@@ -18,6 +18,9 @@
   --medium-border: 2px solid var(--accent);
   --large-border: 4px solid var(--accent);
 
+  --medium-inset: 2px 4px 0 var(--accent);
+  --large-inset: 4px 8px 0 var(--accent);
+
   --base-font: "Atkinson Hyperlegible Mono", Courier;
   --footer-height: 64px;
 
@@ -151,6 +154,28 @@ article .prose ul {
 
 /*** Components ***/
 
+button {
+  border: none;
+  background-color: transparent;
+  color: var(--accent);
+  box-shadow: var(--medium-inset);
+  font-weight: normal;
+  cursor: pointer;
+  padding: var(--space-2);
+}
+
+button:focus,
+button:hover {
+  background-color: var(--primary);
+  color: var(--neutral);
+}
+
+button:active {
+  background-color: var(--primary);
+  color: var(--neutral);
+  box-shadow: var(--large-inset);
+}
+
 data,
 time,
 dd {
@@ -223,7 +248,7 @@ a.cta {
 a.cta:active {
   color: var(--neutral-light);
   background-color: var(--primary);
-  box-shadow: inset -2px -4px 0 var(--accent);
+  box-shadow: var(--medium-inset);
 }
 
 a.cta:focus,
@@ -332,7 +357,7 @@ a.cta:visited {
   display: flex;
   flex-wrap: wrap;
   flex-direction: row;
-  align-items: stretch;
+  align-items: center;
   justify-content: start;
   gap: var(--space-1);
 }
@@ -350,6 +375,7 @@ a.cta:visited {
 
 @media(min-width: 1366px) {
   .right-screen {
+    align-items: stretch;
     flex-direction: column;
     height: 70vh;
     justify-content: start;
@@ -692,6 +718,7 @@ footer>p {
   width: 100%;
 }
 
+
 #skills .box {
   width: 100%;
   overflow: hidden;
@@ -713,10 +740,15 @@ footer>p {
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
+  align-items: stretch;
 }
 
 #skills .box li {
   white-space: wrap;
+}
+
+#skills .box button {
+  width: 100%;
 }
 
 #skills label {

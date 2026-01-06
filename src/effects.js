@@ -1,6 +1,49 @@
 const MAX_ALT = 42000;
+const CARDINAL_DIRECTIONS = [
+  { angle: 0, label: "N", primary: true },
+  { angle: 30, label: "3", primary: false },
+  { angle: 60, label: "6", primary: false },
+  { angle: 90, label: "E", primary: true },
+  { angle: 120, label: "12", primary: false },
+  { angle: 150, label: "15", primary: false },
+  { angle: 180, label: "S", primary: true },
+  { angle: 210, label: "21", primary: false },
+  { angle: 240, label: "24", primary: false },
+  { angle: 270, label: "W", primary: true },
+  { angle: 300, label: "30", primary: false },
+  { angle: 330, label: "33", primary: false },
+];
 
 document.addEventListener("DOMContentLoaded", () => {
+  const main = document.getElementById("main");
+  const projects = document.getElementById("projects");
+
+  /*** Button target effect ***/
+  const buttons = document.getElementsByTagName("button");
+  for (const el of buttons) {
+    const project = el.getAttribute("data-project");
+    if (project) {
+      const label = document.getElementById(`project-${project}`);
+      const input = label.getElementsByTagName("input")[0];
+      el.addEventListener("click", () => {
+        input.checked = true;
+        main.scrollTo({ top: projects.offsetTop });
+      });
+      continue;
+    }
+
+    const experience = el.getAttribute("data-experience");
+    if (experience) {
+      const label = document.getElementById(`experience-${experience}`);
+      const input = label.getElementsByTagName("input")[0];
+      el.addEventListener("click", () => {
+        input.checked = true;
+        main.scrollTo({ top: label.offsetTop });
+      });
+      continue;
+    }
+  }
+
   /*** Marquee effect ***/
   const marquees = document.getElementsByClassName("marquee");
 
@@ -17,111 +60,101 @@ document.addEventListener("DOMContentLoaded", () => {
   const altPos = document.getElementById("alt-pos");
   const altIndicator = document.getElementById("alt-indicator");
   const altCenter = document.getElementById("alt-center");
-  const main = document.getElementById("main");
 
-  for (let alt = MAX_ALT; alt >= 0; alt -= 100) {
-    const el = document.createElement("div");
-    if (alt % 200 === 0) {
-      el.innerHTML = alt.toString();
+  if (altPos && altIndicator && altCenter) {
+    for (let alt = MAX_ALT; alt >= 0; alt -= 100) {
+      const el = document.createElement("div");
+      if (alt % 200 === 0) {
+        el.innerHTML = alt.toString();
+      }
+      altPos.appendChild(el);
     }
-    altPos.appendChild(el);
+
+    function handleAltIndicator() {
+      const altTapeHeight = altIndicator.scrollHeight;
+
+      const height = main.scrollHeight;
+      const top = main.scrollTop;
+      const offset = main.offsetHeight;
+      const topAlt = MAX_ALT * (1 - top / height);
+      const currentAlt = topAlt - (MAX_ALT / altTapeHeight) * (offset / 2);
+      altCenter.innerHTML = Math.floor(currentAlt);
+
+      const tapeScrollPos = altTapeHeight * (1 - topAlt / MAX_ALT);
+      altIndicator.scroll({ top: tapeScrollPos });
+    }
+
+    handleAltIndicator();
+    main.addEventListener("scroll", handleAltIndicator);
+    window.addEventListener("resize", handleAltIndicator);
   }
-
-  function handleAltIndicator() {
-    const altTapeHeight = altIndicator.scrollHeight;
-
-    const height = main.scrollHeight;
-    const top = main.scrollTop;
-    const offset = main.offsetHeight;
-    const topAlt = MAX_ALT * (1 - top / height);
-    const currentAlt = topAlt - (MAX_ALT / altTapeHeight) * (offset / 2);
-    altCenter.innerHTML = Math.floor(currentAlt);
-
-    const tapeScrollPos = altTapeHeight * (1 - topAlt / MAX_ALT);
-    altIndicator.scroll({ top: tapeScrollPos });
-  }
-
-  handleAltIndicator();
-  main.addEventListener("scroll", handleAltIndicator);
-  window.addEventListener("resize", handleAltIndicator);
 
   /*** Heading Indicator ***/
-
   const radar = document.getElementById("radar");
+  if (radar) {
+    // Create SVG element
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("viewBox", "0 0 100 100");
+    svg.setAttribute("class", "radar-svg");
 
-  // Create SVG element
-  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-  svg.setAttribute("viewBox", "0 0 100 100");
-  svg.setAttribute("class", "radar-svg");
-
-  // Create rotating compass rose group
-  const compassRose = document.createElementNS(
-    "http://www.w3.org/2000/svg",
-    "g",
-  );
-  compassRose.setAttribute("class", "compass-rose");
-  compassRose.style.transformOrigin = "50% 50%";
-
-  // Add cardinal and intercardinal directions
-  const directions = [
-    { angle: 0, label: "N", primary: true },
-    { angle: 30, label: "3", primary: false },
-    { angle: 60, label: "6", primary: false },
-    { angle: 90, label: "E", primary: true },
-    { angle: 120, label: "12", primary: false },
-    { angle: 150, label: "15", primary: false },
-    { angle: 180, label: "S", primary: true },
-    { angle: 210, label: "21", primary: false },
-    { angle: 240, label: "24", primary: false },
-    { angle: 270, label: "W", primary: true },
-    { angle: 300, label: "30", primary: false },
-    { angle: 330, label: "33", primary: false },
-  ];
-
-  directions.forEach(({ angle, label, primary }) => {
-    const x = 50 + 40 * Math.cos(((angle + 270) / 360) * 2 * Math.PI);
-    const y = 50 + 40 * Math.sin(((angle + 270) / 360) * 2 * Math.PI);
-
-    const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
-    text.setAttribute("x", x);
-    text.setAttribute("y", y);
-    text.setAttribute(
-      "class",
-      primary ? "direction-marker primary" : "direction-marker",
+    // Create rotating compass rose group
+    const compassRose = document.createElementNS(
+      "http://www.w3.org/2000/svg",
+      "g",
     );
-    text.setAttribute("text-anchor", "middle");
-    text.setAttribute("dominant-baseline", "middle");
-    text.textContent = label;
-    compassRose.appendChild(text);
-  });
+    compassRose.setAttribute("class", "compass-rose");
+    compassRose.style.transformOrigin = "50% 50%";
 
-  svg.appendChild(compassRose);
+    // Add cardinal and intercardinal directions
 
-  // Create center aircraft symbol
-  const aircraft = document.createElementNS(
-    "http://www.w3.org/2000/svg",
-    "text",
-  );
-  aircraft.setAttribute("x", "50");
-  aircraft.setAttribute("y", "50");
-  aircraft.setAttribute("class", "aircraft-symbol");
-  aircraft.setAttribute("text-anchor", "middle");
-  aircraft.setAttribute("dominant-baseline", "middle");
-  aircraft.textContent = "▲";
-  svg.appendChild(aircraft);
+    CARDINAL_DIRECTIONS.forEach(({ angle, label, primary }) => {
+      const x = 50 + 40 * Math.cos(((angle + 270) / 360) * 2 * Math.PI);
+      const y = 50 + 40 * Math.sin(((angle + 270) / 360) * 2 * Math.PI);
 
-  radar.appendChild(svg);
+      const text = document.createElementNS(
+        "http://www.w3.org/2000/svg",
+        "text",
+      );
+      text.setAttribute("x", x);
+      text.setAttribute("y", y);
+      text.setAttribute(
+        "class",
+        primary ? "direction-marker primary" : "direction-marker",
+      );
+      text.setAttribute("text-anchor", "middle");
+      text.setAttribute("dominant-baseline", "middle");
+      text.textContent = label;
+      compassRose.appendChild(text);
+    });
 
-  function handleHeadingIndicator() {
-    const height = main.scrollHeight;
-    const top = main.scrollTop;
-    const scrollProgress = top / height;
-    const heading = scrollProgress * 360;
+    svg.appendChild(compassRose);
 
-    compassRose.style.transform = `rotate(${-heading}deg)`;
+    // Create center aircraft symbol
+    const aircraft = document.createElementNS(
+      "http://www.w3.org/2000/svg",
+      "text",
+    );
+    aircraft.setAttribute("x", "50");
+    aircraft.setAttribute("y", "50");
+    aircraft.setAttribute("class", "aircraft-symbol");
+    aircraft.setAttribute("text-anchor", "middle");
+    aircraft.setAttribute("dominant-baseline", "middle");
+    aircraft.textContent = "▲";
+    svg.appendChild(aircraft);
+
+    radar.appendChild(svg);
+
+    function handleHeadingIndicator() {
+      const height = main.scrollHeight;
+      const top = main.scrollTop;
+      const scrollProgress = top / height;
+      const heading = scrollProgress * 360;
+
+      compassRose.style.transform = `rotate(${-heading}deg)`;
+    }
+
+    handleHeadingIndicator();
+    main.addEventListener("scroll", handleHeadingIndicator);
+    window.addEventListener("resize", handleHeadingIndicator);
   }
-
-  handleHeadingIndicator();
-  main.addEventListener("scroll", handleHeadingIndicator);
-  window.addEventListener("resize", handleHeadingIndicator);
 });
