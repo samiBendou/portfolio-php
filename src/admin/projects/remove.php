@@ -1,7 +1,7 @@
 <?php
 
 $dsn = $_ENV["DB_DSN"];
-$pdo = new PDO($dsn);
+$pdo = new PDO($dsn, $_ENV["DB_USER"], $_ENV["DB_PASSWORD"]);
 
 $id = $_SERVER['REQUEST_METHOD'] == 'GET' ? $_GET["id"] : $_POST["id"];
 

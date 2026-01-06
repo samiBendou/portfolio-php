@@ -3,7 +3,7 @@
 include("consts.php");
 
 $dsn = $_ENV["DB_DSN"];
-$pdo = new PDO($dsn);
+$pdo = new PDO($dsn, $_ENV["DB_USER"], $_ENV["DB_PASSWORD"]);
 
 $query = "SELECT  experience.id as id,
                   experience.title AS title, 

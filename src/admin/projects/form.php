@@ -6,7 +6,7 @@ if (!isset($project)) {
 }
 
 $dsn = $_ENV["DB_DSN"];
-$pdo = new PDO($dsn);
+$pdo = new PDO($dsn, $_ENV["DB_USER"], $_ENV["DB_PASSWORD"]);
 
 $query = "SELECT id, title FROM experience ORDER BY title ASC";
 $experiences = $pdo->query($query);

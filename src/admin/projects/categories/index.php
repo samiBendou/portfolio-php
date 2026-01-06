@@ -1,7 +1,7 @@
 <?php
 
 $dsn = $_ENV["DB_DSN"];
-$pdo = new PDO($dsn);
+$pdo = new PDO($dsn, $_ENV["DB_USER"], $_ENV["DB_PASSWORD"]);
 
 $query = "SELECT id, title FROM project_category ORDER BY title ASC";
 $categories = $pdo->query($query);

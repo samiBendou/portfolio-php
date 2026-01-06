@@ -1,7 +1,7 @@
 <?php
 
 $dsn = $_ENV["DB_DSN"];
-$pdo = new PDO($dsn);
+$pdo = new PDO($dsn, $_ENV["DB_USER"], $_ENV["DB_PASSWORD"]);
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $query = "INSERT INTO skill_category(title) VALUES (:title)";

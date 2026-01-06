@@ -1,7 +1,7 @@
 <?php
 
 $dsn = $_ENV["DB_DSN"];
-$pdo = new PDO($dsn);
+$pdo = new PDO($dsn, $_ENV["DB_USER"], $_ENV["DB_PASSWORD"]);
 
 $query = "SELECT id, title, brief FROM job ORDER BY title ASC";
 $jobs = $pdo->query($query);

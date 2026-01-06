@@ -22,7 +22,7 @@ if (!isset($metar) || (isset($metar_ttl) && $metar_ttl->diff($now)->h >= 1)) {
 }
 
 $dsn = $_ENV["DB_DSN"];
-$pdo = new PDO($dsn);
+$pdo = new PDO($dsn, $_ENV["DB_USER"], $_ENV["DB_PASSWORD"]);
 
 $subquery =  "WITH  ranges AS ( SELECT job, started, COALESCE(ended, date('now')) AS ended FROM experience WHERE job IS NOT NULL),
                         groups AS ( SELECT job, started, ended, MAX(ended) OVER (ORDER BY started ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING) AS prev_max_end 

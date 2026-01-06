@@ -10,7 +10,7 @@ $kind = $experience["kind"];
 
 
 $dsn = $_ENV["DB_DSN"];
-$pdo = new PDO($dsn);
+$pdo = new PDO($dsn, $_ENV["DB_USER"], $_ENV["DB_PASSWORD"]);
 
 $query = "SELECT id, title FROM organization ORDER BY title ASC";
 $organizations = $pdo->query($query);
