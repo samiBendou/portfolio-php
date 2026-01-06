@@ -101,22 +101,27 @@ $subquery =  "WITH  ranges AS ( SELECT skill, started, COALESCE(ended, date('now
                         dates AS (    SELECT skill, MAX(ended) as ended, MIN(started) as started FROM numbered GROUP BY grp, skill)
                   SELECT skill, MIN(started) AS started, ROUND(SUM(ended - started) / 365.0) AS duration FROM dates GROUP BY skill";
 
-$subquery2 = "SELECT experience_skill.skill as skill, JSON_AGG(experience.title) as titles
+$subquery_experience_skill = "SELECT experience_skill.skill as skill, JSON_AGG(experience.title) as titles
               FROM experience_skill JOIN experience ON experience_skill.experience = experience.id
               GROUP BY experience_skill.skill";
 
+$subquery_project_skill = "SELECT project_skill.skill as skill, JSON_AGG(project.title) as titles
+              FROM project_skill JOIN project ON project_skill.project = project.id
+              GROUP BY project_skill.skill";
 
 $query = "SELECT  skill_category.title as kind,
                   JSON_AGG(JSON_BUILD_OBJECT( 'id', skill.id, 
                                               'title', skill.title, 
                                               'level', skill.level, 
                                               'duration', dates.duration, 
-                                              'experiences', experiences.titles) 
+                                              'experiences', experiences.titles,
+                                              'projects', projects.titles) 
                   ORDER BY skill.title) as skills 
           FROM skill  
           LEFT JOIN skill_category ON skill.category=skill_category.id
           LEFT JOIN ($subquery) AS dates ON skill.id=dates.skill
-          LEFT JOIN ($subquery2) AS experiences ON experiences.skill=skill.id
+          LEFT JOIN ($subquery_experience_skill) AS experiences ON experiences.skill=skill.id
+          LEFT JOIN ($subquery_project_skill) AS projects ON projects.skill=skill.id
           GROUP BY skill_category.title 
           ORDER BY skill_category.title ASC";
 $skills = $pdo->query($query);
@@ -126,6 +131,7 @@ $query = "SELECT  project.id,
                   project.title, 
                   project_category.title AS category, 
                   project.brief,
+                  project.link,
                   project.details,
                   project.started, 
                   project.ended, 
@@ -239,7 +245,6 @@ file_put_contents($cache_file, '<?php return ' . var_export([
 
     <main id="main">
       <section id="about">
-
         <div id="metar" class="marquee" role="figure">
           <div>
             <?= $metar ?> // HI! MY NAME IS SAMI DAHOUX // I MAKE SOFTWARE WITH MAGIC AND PASSION //
@@ -251,7 +256,6 @@ file_put_contents($cache_file, '<?php return ' . var_export([
 
           <div>
             <h2 class="oldschool-heading">About me</h2>
-
             <dl>
               <dt>
                 Sami Dahoux
@@ -348,12 +352,25 @@ file_put_contents($cache_file, '<?php return ' . var_export([
               <dd><?= $skill["duration"] ?> year(s)</dd>
               <dd><?= SKILL_LEVEL[$skill["level"]] ?></dd>
           </dl>
-          <h4>Related</h4>
+          <?php if ($skill["experiences"]) { ?>
+          <h4>Experiences</h4>
           <ul>
-            <?php foreach ($skill["experiences"] as $experience) { ?>
+            <?php
+                foreach ($skill["experiences"] as $experience) { ?>
             <li><?= $experience ?></li>
             <?php } ?>
           </ul>
+          <?php } ?>
+
+          <?php if ($skill["projects"]) { ?>
+          <h4>Projects</h4>
+          <ul>
+            <?php
+                foreach ($skill["projects"] as $project) { ?>
+            <li><?= $project ?></li>
+            <?php } ?>
+          </ul>
+          <?php } ?>
         </article>
         <?php } ?>
         </div>
@@ -411,7 +428,8 @@ file_put_contents($cache_file, '<?php return ' . var_export([
           </dl>
             <div class="marquee">
               <ul class="skills">
-                <?php foreach (json_decode($experience["skills"], true) as $skill) { ?>
+                <?php
+                      foreach (json_decode($experience["skills"], true) as $skill) { ?>
                 <li>
                   <?= $skill ?>
                 </li>
@@ -475,8 +493,14 @@ file_put_contents($cache_file, '<?php return ' . var_export([
                   <?php } ?>
                 </ul>
               </div>
-              <a class="cta" href="/DAHOUX-Sami-generic-resume.pdf" target="_blank">Get resume</a>
               
+              <ul class="cta-list">
+                <li><a class="cta" href="/DAHOUX-Sami-generic-resume.pdf" target="_blank">Get resume</a></li>
+                <?php if ($project["link"]) { ?>
+                <li><a class="cta" href="<?= $project["link"] ?>" target="_blank">View project</a></li>
+                <?php } ?>
+              </ul>
+
               <p>  
                 <?= $project["brief"] ?>
               </p>

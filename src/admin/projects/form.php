@@ -59,6 +59,11 @@ if (isset($project)) {
     </label>
 
     <label>
+      <span>Link</span>
+      <input spellcheck="true" name="link" value="<?= $project["link"] ?>" />
+    </label>
+
+    <label>
       <span>Details</span>
       <div id="editor-container">
         <div id="editor">
