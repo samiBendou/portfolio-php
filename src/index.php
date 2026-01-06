@@ -67,10 +67,13 @@ $query = "SELECT  experience.id,
                   experience.details,
                   experience.started, 
                   experience.ended, 
-                  ((COALESCE(ended, date('now')) - started) / 30) AS duration, 
+                  ((COALESCE(experience.ended, date('now')) - experience.started) / 30) AS duration, 
                   experience.location AS location,
                   organization.title as organization_title,
                   organization.link as organization_link,
+                  (SELECT JSON_AGG(JSON_BUILD_OBJECT('id', p.id, 'title', p.title))
+                   FROM project p
+                   WHERE p.experience = experience.id) as projects,
                   JSON_AGG(DISTINCT skill.title ORDER BY skill.title ASC) FILTER (WHERE skill.title IS NOT NULL) AS skills
           FROM experience
           LEFT JOIN organization ON experience.organization = organization.id
@@ -114,20 +117,22 @@ $subquery_project_skill = "SELECT project_skill.skill as skill,
                             GROUP BY project_skill.skill";
 
 $query = "SELECT  skill_category.title as kind,
+                  COUNT(skill.id) as count,
                   JSON_AGG(JSON_BUILD_OBJECT( 'id', skill.id, 
                                               'title', skill.title, 
                                               'level', skill.level, 
-                                              'duration', dates.duration, 
+                                              'started', dates.started, 
                                               'experiences', experiences.titles,
                                               'projects', projects.titles) 
                   ORDER BY skill.title) as skills 
-          FROM skill  
+          FROM skill
           LEFT JOIN skill_category ON skill.category=skill_category.id
           LEFT JOIN ($subquery) AS dates ON skill.id=dates.skill
           LEFT JOIN ($subquery_experience_skill) AS experiences ON experiences.skill=skill.id
           LEFT JOIN ($subquery_project_skill) AS projects ON projects.skill=skill.id
+          WHERE skill.level >= 3
           GROUP BY skill_category.title 
-          ORDER BY skill_category.title ASC";
+          ORDER BY count DESC";
 $skills = $pdo->query($query);
 
 
@@ -140,6 +145,7 @@ $query = "SELECT  project.id,
                   project.started, 
                   project.ended, 
                   ((COALESCE(project.ended, date('now')) - project.started) / 30) AS duration, 
+                  experience.id as experience_id,
                   experience.title as experience_title,
                   project.link as link,
                   JSON_AGG(DISTINCT skill.title ORDER BY skill.title ASC) FILTER (WHERE skill.title IS NOT NULL) AS skills
@@ -283,12 +289,17 @@ file_put_contents($cache_file, '<?php return ' . var_export([
             </dl>
 
             <p>
-              I am an engineer with a passionated with both
-              <em>software</em>
-              <em>cyber-physical systems</em>. I believe that engineering is an
-              <em>artistic</em>
+              I am an engineer passionated with both
+              <strong>software</strong> and
+              <strong>making</strong>. I believe that engineering is an
+              <strong>artistic</strong>
               and
-              <em>creative</em> way to <em>imagine</em> and <em>build</em> the world we want to live in.
+              <strong>creative</strong> way to <strong>imagine</strong> and <strong>build</strong> the world we want to live in.
+            </p>
+            
+            <p>
+              I love <strong>running</strong> and <strong>kick-boxing</strong>. 
+              I am also a <strong>photographer</strong> and <strong>musician</strong> in my spare time.
             </p>
 
             <ul class="cta-list">
@@ -331,7 +342,6 @@ file_put_contents($cache_file, '<?php return ' . var_export([
                 </ul>
               </div>
               <a class="cta" href="/DAHOUX-Sami-generic-resume.pdf" target="_blank">Get resume</a>
-              
               <div class="prose">
                 <?= $job["brief"] ?>
               </div>
@@ -353,7 +363,7 @@ file_put_contents($cache_file, '<?php return ' . var_export([
         </label>
         <article class="box">
           <dl>
-              <dd><?= $skill["duration"] ?> year(s)</dd>
+              <dd>Since <?= new DateTime($skill["started"])->format("Y") ?></dd>
               <dd><?= SKILL_LEVEL[$skill["level"]] ?></dd>
           </dl>
           <?php if ($skill["experiences"]) { ?>
@@ -390,8 +400,6 @@ file_put_contents($cache_file, '<?php return ' . var_export([
       <section id="experiences">
         <h2>My experiences</h2>
         <?php foreach ($experiences as $experience) {
-            $location = $resolved_locations[$experience["location"]];
-            $url_location = urlencode($location["city"]) . "+" .  urlencode($location["country"]);
             ?>
 
         <article>
@@ -420,7 +428,11 @@ file_put_contents($cache_file, '<?php return ' . var_export([
               <dd>
                 <?= $experience["duration"] ?> month(s)
               </dd>
-              <?php if ($location && $location["city"] !== null) { ?>
+              <?php if ($experience["location"]) {
+                  $location = $resolved_locations[$experience["location"]];
+                  $url_location = urlencode($location["city"]) . "+" .  urlencode($location["country"]);
+                  if ($location["city"]) {
+                      ?>
               <dd>
               <a href="<?= "https://www.google.com/maps/place/$url_location" ?>">
                   <?= $location["city"] ?>
@@ -433,6 +445,7 @@ file_put_contents($cache_file, '<?php return ' . var_export([
                 <?= $location["country"] ?>
               </dd>
               <?php } ?>
+              <?php } ?>
           </dl>
 
               <h4>
@@ -442,7 +455,7 @@ file_put_contents($cache_file, '<?php return ' . var_export([
             <div class="marquee">
               <ul class="skills">
                 <?php
-                      foreach (json_decode($experience["skills"], true) as $skill) { ?>
+                       foreach (json_decode($experience["skills"], true) as $skill) { ?>
                 <li>
                   <?= $skill ?>
                 </li>
@@ -451,6 +464,14 @@ file_put_contents($cache_file, '<?php return ' . var_export([
             </div>
 
             <a class="cta" href="/DAHOUX-Sami-generic-resume.pdf" target="_blank">Get resume</a>
+              <ul class="projects">
+                <?php
+                       foreach (json_decode($experience["projects"], true) as $project) { ?>
+                <li>
+                  <button data-project="<?= $project["id"] ?>"><?= $project["title"]?></button>
+                </li>
+                <?php } ?>
+              </ul>
 
             <p>
               <?= $experience["brief"] ?>
@@ -514,6 +535,8 @@ file_put_contents($cache_file, '<?php return ' . var_export([
                 <?php } ?>
               </ul>
 
+              <button data-experience="<?= $project["experience_id"] ?>"><?= $project["experience_title"]?></button>
+              
               <p>  
                 <?= $project["brief"] ?>
               </p>

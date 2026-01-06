@@ -1,6 +1,5 @@
 <?php
 include($_SERVER["DOCUMENT_ROOT"] . "/admin/skills/consts.php");
-include("consts.php");
 
 if (!isset($project)) {
     $project = [];
@@ -14,6 +13,9 @@ $experiences = $pdo->query($query);
 
 $query = "SELECT id, title FROM project_category ORDER BY title ASC";
 $categories = $pdo->query($query);
+
+$query = "SELECT id, title FROM skill_category ORDER BY title ASC";
+$skill_categories = $pdo->query($query)->fetchAll();
 
 $query = "SELECT id, title FROM skill ORDER BY title ASC";
 $skills = $pdo->query($query);
@@ -60,7 +62,7 @@ if (isset($project)) {
 
     <label>
       <span>Link</span>
-      <input spellcheck="true" name="link" value="<?= $project["link"] ?>" />
+      <input type="url" spellcheck="true" name="link" value="<?= $project["link"] ?>" />
     </label>
 
     <label>
@@ -120,11 +122,11 @@ if (isset($project)) {
           <input name="skill_title[]" />
         </label>
         <label>
-          <span>Kind</span>
-          <select name="skill_kind[]">
-            <?php foreach (SKILL_KIND as $kind => $label) { ?>
-            <option value="<?= $kind ?>">
-              <?= $label ?>
+          <span>Category</span>
+          <select name="skill_category[]">
+            <?php foreach ($skill_categories as $category) { ?>
+            <option value="<?= $category["id"] ?>">
+              <?= $category["title"] ?>
             </option>
             <?php } ?>
           </select>

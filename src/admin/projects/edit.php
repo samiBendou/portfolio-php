@@ -33,7 +33,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $stmt = $pdo->prepare($query);
     $stmt->execute([$id]);
 
-    $query = "INSERT INTO skill(title, kind, level) VALUES (:title, :kind, :level)";
+    $query = "INSERT INTO skill(title, category, level) VALUES (:title, :category, :level)";
     $stmt = $pdo->prepare($query);
     $new_skills = [];
 
@@ -41,7 +41,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         if ($_POST["skill_title"][$idx]) {
             $stmt->execute([
               ":title" => $_POST["skill_title"][$idx],
-              ":kind" => $_POST["skill_kind"][$idx],
+              ":category" => $_POST["skill_category"][$idx],
               ":level" => $_POST["skill_level"][$idx]
             ]);
             array_push($new_skills, $pdo->lastInsertId());

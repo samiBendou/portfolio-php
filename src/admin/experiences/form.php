@@ -18,6 +18,9 @@ $organizations = $pdo->query($query);
 $query = "SELECT id, title FROM job ORDER BY title ASC";
 $jobs = $pdo->query($query);
 
+$query = "SELECT id, title FROM skill_category ORDER BY title ASC";
+$skill_categories = $pdo->query($query)->fetchAll();
+
 $query = "SELECT id, title FROM skill ORDER BY title ASC";
 $skills = $pdo->query($query);
 
@@ -191,11 +194,11 @@ if (isset($experience)) {
           <input name="skill_title[]" />
         </label>
         <label>
-          <span>Kind</span>
-          <select name="skill_kind[]">
-            <?php foreach (SKILL_KIND as $kind => $label) { ?>
-            <option value="<?= $kind ?>">
-              <?= $label ?>
+          <span>Category</span>
+          <select name="skill_category[]">
+            <?php foreach ($skill_categories as $category) { ?>
+            <option value="<?= $category["id"] ?>">
+              <?= $category["title"] ?>
             </option>
           <?php } ?>
           </select>

@@ -5,7 +5,7 @@ $pdo = new PDO($dsn);
 
 $id = $_SERVER['REQUEST_METHOD'] == 'GET' ? $_GET["id"] : $_POST["id"];
 
-$query = "SELECT id, title, kind, level FROM skill WHERE id=?";
+$query = "SELECT id, title FROM skill WHERE id=?";
 $stmt = $pdo->prepare($query);
 $stmt->execute([$id]);
 $skill = $stmt->fetch();

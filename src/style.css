@@ -150,6 +150,11 @@ article .prose p {
 article .prose ul {
   list-style-type: "- ";
   padding-left: 2ch;
+  color: var(--accent);
+}
+
+article .prose ul:first-child {
+  margin-bottom: var(--space-5);
 }
 
 /*** Components ***/
@@ -330,6 +335,16 @@ a.cta:visited {
 
 .skills li::before {
   content: "//";
+}
+
+.projects {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.projects li {
+  flex-shrink: 0;
 }
 
 .box {
@@ -592,11 +607,6 @@ footer>p {
   font-size: 0.333333em;
 }
 
-#about>div:last-child strong {
-  font-style: normal;
-  text-transform: uppercase;
-}
-
 #about>div:last-child dl {
   display: grid;
   grid-template-columns: 1fr max-content;
@@ -706,7 +716,7 @@ footer>p {
 }
 
 #skills>div>div {
-  flex-basis: 10%;
+  flex-basis: 25%;
   flex-grow: 1;
   max-width: 100%;
 }
@@ -758,7 +768,6 @@ footer>p {
   text-overflow: ellipsis;
 }
 
-#skills .level-3,
 #skills .level-4 {
   font-weight: bold;
 }
