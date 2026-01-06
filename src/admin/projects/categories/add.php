@@ -15,7 +15,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 }
 
 
-$title = "Categories/add";
+$title = "Projects/Categories/add";
 ob_start();
 ?>
 

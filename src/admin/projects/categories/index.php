@@ -6,7 +6,7 @@ $pdo = new PDO($dsn);
 $query = "SELECT id, title FROM project_category ORDER BY title ASC";
 $categories = $pdo->query($query);
 
-$title = "Categories";
+$title = "Projects/Categories";
 ob_start();
 ?>
 
