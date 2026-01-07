@@ -454,7 +454,6 @@ label:has(>input) {
 }
 
 label:has(>input:focus),
-label:has(>input:focus:checked),
 label:has(>input):hover {
   background-color: var(--accent);
   color: var(--neutral-light);
@@ -465,6 +464,7 @@ label:has(>input:checked) {
   color: var(--neutral-light);
 }
 
+label:has(>input:focus:checked),
 label:has(>input:active) {
   background-color: var(--primary);
   color: var(--neutral-light);
