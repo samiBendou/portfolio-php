@@ -250,7 +250,7 @@ summary {
   --large-inset: 4px 8px 0 var(--accent);
 
   --base-font: "Atkinson Hyperlegible Mono", Arial;
-  --footer-height: 64px;
+  --footer-height: 96px;
 
   --space-1: 4px;
   --space-2: 8px;
@@ -729,16 +729,33 @@ footer {
   align-items: center;
   justify-content: center;
   border-top: var(--medium-border);
-  height: var(--foter-height);
+  height: var(--footer-height);
   font-variant: small-caps;
   text-transform: uppercase;
   text-align: center;
+  gap: var(--space-2);
 }
 
 footer>p {
-  display: block;
+  display: inline-block;
   margin: var(--space-2);
 }
+
+footer>address {
+  display: inline-flex;
+  align-items: start;
+  justify-content: start;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+@media(min-width: 1024px) {
+  :root {
+    --footer-height: 64px;
+  }
+}
+
+
 
 #alt-indicator {
   display: none;

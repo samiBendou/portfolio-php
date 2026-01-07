@@ -288,16 +288,22 @@ file_put_contents($cache_file, '<?php return ' . var_export([
             <p>
               I am an <strong>software and systems engineer</strong> passionated with
               <strong>science</strong>,
-              <strong>aviation</strong> and <strong>space</strong>. I believe that engineering is an
+              <strong>aviation</strong> and <strong>space</strong>.</p>
+
+            <p>
+ I believe that engineering is an
               <strong>artistic</strong>
               and
               <strong>creative</strong> way to <strong>imagine</strong> and <strong>build</strong> the world we want to live in.
+
             </p>
-            
+
             <p>
               I love <strong>running</strong> and <strong>kick-boxing</strong>. 
               I am also a <strong>photographer</strong> and <strong>musician</strong> in my spare time.
             </p>
+
+            <p><em>Feel free to contact me in case you want to collaborate or know more about me!</em></p>
 
             <ul class="cta-list">
               <li><a href="mailto:sami@bendou.space" class="cta">Let's meet</a></li>
