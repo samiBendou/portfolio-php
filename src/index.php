@@ -224,13 +224,10 @@ file_put_contents($cache_file, '<?php return ' . var_export([
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
-    href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Mono:ital,wght@0,200..800;1,200..800&family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&family=Cutive+Mono&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Mono:ital,wght@0,200..800;1,200..800&display=swap"
     rel="stylesheet">
-  <script src="https://unpkg.com/lucide@latest"></script>
   <script src="/effects.js"></script>
   <link rel="stylesheet" href="/style.css">
-  <link rel="stylesheet" href="/modern-normalize.css">
-  <link rel="stylesheet" href="/assets/fonts/lucide.css">
 </head>
 
 <body>
@@ -248,7 +245,7 @@ file_put_contents($cache_file, '<?php return ' . var_export([
             <li><a href="#about">About</a></li>
             <li><a href="#experiences">Experience</a></li>
             <li><a href="#projects">Projects</a></li>
-            <li><a href="#contact">Contact</a></li>
+            <li><a href="mailto:sami@bendou.space">Contact</a></li>
           </ul>
         </nav>
     </header>
@@ -289,7 +286,7 @@ file_put_contents($cache_file, '<?php return ' . var_export([
             </dl>
 
             <p>
-              I am an software engineer passionated with
+              I am an <strong>software and systems engineer</strong> passionated with
               <strong>science</strong>,
               <strong>aviation</strong> and <strong>space</strong>. I believe that engineering is an
               <strong>artistic</strong>
@@ -303,8 +300,7 @@ file_put_contents($cache_file, '<?php return ' . var_export([
             </p>
 
             <ul class="cta-list">
-              <li><a href="#contact" class="cta">Let's meet</a></li>
-              <li><a href="/asses/DAHOUX-Sami-generic-resume.pdf" class="cta">Get Resume</a></li>
+              <li><a href="mailto:sami@bendou.space" class="cta">Let's meet</a></li>
             </ul>
 
           </div>
@@ -341,7 +337,7 @@ file_put_contents($cache_file, '<?php return ' . var_export([
                   <?php } ?>
                 </ul>
               </div>
-              <a class="cta" href="/DAHOUX-Sami-generic-resume.pdf" target="_blank">Get resume</a>
+              <a class="cta" href="mailto:sami@bendou.space" >Let's meet</a>
               <div class="prose">
                 <?= $job["brief"] ?>
               </div>
@@ -463,7 +459,7 @@ file_put_contents($cache_file, '<?php return ' . var_export([
               </ul>
             </div>
 
-            <a class="cta" href="/DAHOUX-Sami-generic-resume.pdf" target="_blank">Get resume</a>
+            <a class="cta" href="mailto:sami@bendou.space" >Let's meet</a>
               <ul class="projects">
                 <?php
                        foreach (json_decode($experience["projects"], true) as $project) { ?>
@@ -529,9 +525,9 @@ file_put_contents($cache_file, '<?php return ' . var_export([
               </div>
               
               <ul class="cta-list">
-                <li><a class="cta" href="/DAHOUX-Sami-generic-resume.pdf" target="_blank">Get resume</a></li>
+                <li><a class="cta" href="mailto:sami@bendou.space" >Let's meet</a></li>
                 <?php if ($project["link"]) { ?>
-                <li><a class="cta" href="<?= $project["link"] ?>" target="_blank">View project</a></li>
+                <li><a class="cta" href="<?= $project["link"] ?>" >View project</a></li>
                 <?php } ?>
               </ul>
 
@@ -554,10 +550,15 @@ file_put_contents($cache_file, '<?php return ' . var_export([
       <div id="alt-pos"></div>
     </div>
   </div>
-  <footer>
+  <footer id="contact">
     <p id="copyright">
-      © <a href="https://portfolio.bendou.space">Sami Dahoux</a> and
+      © <a href="https://sami.bendou.space">Sami Dahoux</a> and
       <a href="https://www.clarapeker.com/">Clara Peker</a> 2026, All Rights Reserved
     </p>
+    <address>
+      <a href="https://linedin.com/in/samidahoux">Linkedin</a>
+      <a href="https://github.com/samiBendou">Github</a>
+      <a href="mailto:sami@bendou.space">Mail</a>
+    </address>
   </footer>
 </body>
