@@ -212,7 +212,7 @@ file_put_contents($cache_file, '<?php return ' . var_export([
   ], true) . ';');
 
 $title = "Sami Dahoux - Portfolio";
-$description = "Passionate freelance software and systems engineer since 2017, ready to help you build your next idia. Web applications, mobile applications, backend services and more.";
+$description = "Passionate freelance software and systems engineer since 2017, ready to help you build your next idea. Web applications, mobile applications, backend services and more.";
 ?>
 
 <!DOCTYPE html>
