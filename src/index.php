@@ -238,6 +238,16 @@ $description = "Passionate freelance software and systems engineer since 2017, r
     rel="stylesheet" media="print" onload="this.media='all'">
   <script src="/effects.js"></script>
   <link rel="stylesheet" href="/style.css">
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-CJPBMQFFLV"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-CJPBMQFFLV');
+</script>
 </head>
 
 <body>
