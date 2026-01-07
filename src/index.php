@@ -210,6 +210,9 @@ file_put_contents($cache_file, '<?php return ' . var_export([
     "metar" => $metar,
     "metar_ttl" => $metar_ttl
   ], true) . ';');
+
+$title = "Sami Dahoux - Portfolio";
+$description = "Passionate freelance software and systems engineer since 2017, ready to help you build your next idia. Web applications, mobile applications, backend services and more.";
 ?>
 
 <!DOCTYPE html>
@@ -218,14 +221,21 @@ file_put_contents($cache_file, '<?php return ' . var_export([
 <head>
   <meta charset="utf-8" />
   <title>
-    Sami Dahoux - Portfolio
+    <?= $title ?>
   </title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <meta name="description" content="<?= $description ?>" />
+  <meta property="og:locale" content="en_US"/>
+  <meta property="og:type" content="article"/>
+  <meta property="og:title" content="<?= $title ?>"/>
+  <meta property="og:description" content="<?= $description ?>"/>
+  <meta property="og:site_name" content="Sami Dahoux's portfolio"/>
+
   <link
     href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Mono:ital,wght@0,200..800;1,200..800&display=swap"
-    rel="stylesheet">
+    rel="stylesheet" media="print" onload="this.media='all'">
   <script src="/effects.js"></script>
   <link rel="stylesheet" href="/style.css">
 </head>

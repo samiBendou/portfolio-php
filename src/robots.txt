@@ -1,0 +1,23 @@
+# robots.txt for Ayurveda Consultation
+
+# Allow all crawlers to access all content by default
+User-agent: *
+Allow: /
+
+# Specific rules for Googlebot (optimized for Google Search)
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 0
+
+# Allow Google Image indexing
+User-agent: Googlebot-Image
+Allow: /
+
+# Block common admin and private directories (if any)
+Disallow: /admin/
+Disallow: /private/
+Disallow: /tmp/
+Disallow: /logs/
+
+# Sitemap location (update with actual sitemap URL when available)
+# Sitemap: https://sami.bendou.space/sitemap.xml
