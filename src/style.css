@@ -858,6 +858,10 @@ footer>address {
   grid-template-columns: 1fr max-content;
 }
 
+#about>div:last-child dl>:first-child {
+  grid-column: span 2;
+}
+
 #about>div:last-child dt {
   grid-column: 1;
   overflow: hidden;
