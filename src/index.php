@@ -289,9 +289,9 @@ file_put_contents($cache_file, '<?php return ' . var_export([
             </dl>
 
             <p>
-              I am an engineer passionated with both
-              <strong>software</strong> and
-              <strong>making</strong>. I believe that engineering is an
+              I am an software engineer passionated with
+              <strong>science</strong>,
+              <strong>aviation</strong> and <strong>space</strong>. I believe that engineering is an
               <strong>artistic</strong>
               and
               <strong>creative</strong> way to <strong>imagine</strong> and <strong>build</strong> the world we want to live in.

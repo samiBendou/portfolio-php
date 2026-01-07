@@ -27,7 +27,9 @@ document.addEventListener("DOMContentLoaded", () => {
       const input = label.getElementsByTagName("input")[0];
       el.addEventListener("click", () => {
         input.checked = true;
-        main.scrollTo({ top: projects.offsetTop });
+        const width = window.innerWidth > 0 ? window.innerWidth : screen.width;
+        const top = width >= 1366 ? projects.offsetTop : label.offsetTop;
+        main.scrollTo({ top });
       });
       continue;
     }
