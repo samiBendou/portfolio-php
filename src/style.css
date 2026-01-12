@@ -227,23 +227,12 @@ summary {
 }
 
 :root {
-  --primary: black;
+  --primary: white;
   --accent: #5cdb95;
-  --neutral-light: #eeeeee;
-  --neutral: white;
-}
+  --neutral-light: #222222;
+  --neutral: black;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --primary: white;
-    --accent: #5cdb95;
-    --neutral-light: #222222;
-    --neutral: black;
-  }
 
-}
-
-:root {
   --medium-border: 2px solid var(--accent);
   --large-border: 4px solid var(--accent);
 
